@@ -94,7 +94,7 @@
       "license": "MIT"
     },
     "platform": "Javascript/Node.js",
-    "icon": "-influxdb.png",
+    "icon": "solectrus-influxdb.png",
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/patricknitsch/ioBroker.-influxdb/main/admin/-influxdb.png",
     "readme": "https://github.com/patricknitsch/ioBroker.-influxdb/blob/main/README.md",
