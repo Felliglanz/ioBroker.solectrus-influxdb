@@ -85,9 +85,9 @@
             },
             {
               "attr": "sourceState",
-              "title": "ioBroker Source State",
-              "type": "text",
-              "width": "250px"
+              "title": "Source State",
+              "type": "objectId",
+              "width": "300px"
             },
             {
               "attr": "type",
