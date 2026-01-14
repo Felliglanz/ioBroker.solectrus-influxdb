@@ -9,141 +9,169 @@
 
 **Tests:** ![Test and Release](https://github.com/patricknitsch/ioBroker.solectrus-influxdb/workflows/Test%20and%20Release/badge.svg)
 
-# 🟢 ioBroker Solectrus-InfluxDB Adapter
+# 🌞 Solectrus InfluxDB Adapter for ioBroker
 
-Warning: This repository is experimental and unsupported; do not use it in production.
+![ioBroker](https://img.shields.io/badge/ioBroker-Adapter-blue)
+![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green)
+![InfluxDB](https://img.shields.io/badge/InfluxDB-2.x-orange)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
-## 🚀 Overview
+---
 
-The Solectrus-InfluxDB adapter is designed to bridge ioBroker states—especially from Solar inverters and energy devices—to an InfluxDB time-series database with minimal configuration. It's based on the HA-Integration from Solectrus to push states to Influx for Solectrus Dashboard.
+## 🇬🇧 English
 
-By continuously polling configured ioBroker states, caching the data, and writing timestamped measurements to InfluxDB, this adapter enables:
+### Overview
+The **Solectrus InfluxDB Adapter** connects ioBroker states to **InfluxDB 2.x**.  
+It allows you to define sensors via `jsonConfig`, subscribe to foreign states, mirror them as adapter states, and periodically write them into InfluxDB. The adpater based on the HA-integration from @ledermann. The datas should be write into the InfluxDB from Solectrus, but can als written into any other Influx DB.
+Der Adapter basiert auf der HA-Integration Solectrus von @ledermann. Die Daten sollen in die InfluxDB von Solectrus geschrieben werden, können aber auch für andere InfluxDB's verwendet werden.
 
-Powerful time-series analytics
+Typical use cases:
+- Photovoltaics (inverters, forecasts)
+- Battery systems
+- Heat pumps
+- Grid import/export
+- Wallboxes
+- Custom power/energy sensors
 
-Integration with Grafana or other visualization tools
+---
 
-Historical energy system monitoring
+### Features
+- Dynamic sensor configuration via Admin UI (jsonConfig)
+- Supports `int`, `float`, `bool`, `string`
+- Live updates via `stateChange`
+- Periodic bulk writes to InfluxDB
+- Connection health state (`info.connection`)
+- Safe adapter lifecycle handling (start/stop/restart)
+- Supports up to **20 custom user-defined sensors**
 
-## ⚙️ Features
+---
 
-🎯 Multiple sensor support: Easily configure dozens of sensors with their data types and mappings
+### Configuration
 
-🔄 Dynamic state creation & extension: Automatically create ioBroker states or extend existing ones for sensor data
+#### InfluxDB
+| Field | Description |
+|-----|-------------|
+| URL | InfluxDB base URL |
+| Organization | InfluxDB org |
+| Bucket | Target bucket |
+| Token | API token |
+| Polling interval | Write interval in seconds |
 
-⏱️ Configurable polling interval (5-30 seconds) for flexible data write frequency
+#### Sensors
+Each sensor consists of:
+- Enabled
+- Sensor Name
+- ioBroker source state
+- Datatype
+- Measurement
+- Field
 
-🔗 InfluxDB v2+ native support using official @influxdata/influxdb-client
+Only enabled sensors are processed.
 
-✔️ Connection health monitoring via the info.connection state
+---
 
-🧹 Graceful shutdown with clean resource release and unsubscribe mechanisms
+### Runtime Behavior
+1. Adapter starts
+2. InfluxDB connection is validated
+3. Sensor states are created or updated
+4. Foreign states are subscribed
+5. State changes update internal cache
+6. Cached values are written periodically to InfluxDB
 
-✨ User-defined sensors for custom measurements tailored to your needs
+---
 
-🛠️ Robust error handling and debug logging
+### Developer Notes
+- Adapter uses **compact mode**
+- Uses `extendObject()` to update existing states
+- Uses internal cache to avoid unnecessary reads
+- Handles restart/unload cleanly
+- Written in plain JavaScript (no TypeScript runtime)
 
-## 🛠️ Configuration
+---
 
-Configure the adapter via the ioBroker admin UI with two main tabs:
+### Requirements
+- ioBroker >= latest stable
+- Node.js >= 18
+- InfluxDB 2.x
 
-### InfluxDB Settings
+---
 
-🔑 Parameter	📝 Description
-InfluxDB URL	URL of your InfluxDB instance
-Organization	InfluxDB organization name
-Bucket	Bucket name to write data into
-Token	Secure API token for InfluxDB
-Polling Interval	Interval (seconds) between writes (default 5, min 5, max 30)
+## 🇩🇪 Deutsch
 
-### Sensors Settings
+### Überblick
+Der **Solectrus InfluxDB Adapter** verbindet ioBroker-Datenpunkte mit **InfluxDB 2.x**.  
+Sensoren werden über die Admin-Oberfläche konfiguriert, fremde States abonniert, intern gespiegelt und zyklisch nach InfluxDB geschrieben. Der Adapter basiert auf der HA-Integration Solectrus von @ledermann. Die Daten sollen in die InfluxDB von Solectrus geschrieben werden, können aber auch für andere InfluxDB's verwendet werden.
 
-🔧 Field	📖 Description
-Enabled	Enable or disable individual sensors
-Sensor Name	Human-readable name for the sensor
-ioBroker Source State	ioBroker state ID to read data from
-Datatype	Data type in InfluxDB (int, float, bool, string)
-Influx Measurement	Measurement name in InfluxDB
-Influx Field	Field name for the measurement
-🧩 How It Works
+Typische Einsatzbereiche:
+- Photovoltaik (Wechselrichter, Prognosen)
+- Batteriesysteme
+- Wärmepumpen
+- Netzbezug / Einspeisung
+- Wallboxen
+- Benutzerdefinierte Leistungs- und Energiesensoren
 
-### Initialization
-Validates InfluxDB configuration and establishes a connection with a test write.
+---
 
-### Sensor Setup
-Prepares sensor states in ioBroker (creates or updates) and subscribes to their source states.
+### Funktionen
+- Dynamische Sensorkonfiguration per Admin UI
+- Unterstützt `int`, `float`, `bool`, `string`
+- Live-Updates über `stateChange`
+- Zyklisches Schreiben nach InfluxDB
+- Verbindungsstatus (`info.connection`)
+- Sauberes Start-/Stop-/Restart-Verhalten
+- Unterstützung für **bis zu 20 benutzerdefinierte Sensoren**
 
-### State Changes
-When subscribed source states update, the adapter caches new values and reflects changes in corresponding sensor states.
+---
 
-### Data Writing
-At configured intervals, cached sensor data is written as timestamped points into InfluxDB.
+### Konfiguration
 
-### Monitoring
-Adapter connection health is reflected in info.connection for easy monitoring.
+#### InfluxDB
+| Feld | Beschreibung |
+|-----|--------------|
+| URL | InfluxDB Basis-URL |
+| Organization | InfluxDB Organisation |
+| Bucket | Ziel-Bucket |
+| Token | API-Token |
+| Polling-Intervall | Schreibintervall in Sekunden |
 
-## 🧑‍💻 Developer Notes
+#### Sensoren
+Ein Sensor besteht aus:
+- Aktiviert
+- Sensorname
+- ioBroker-Quell-State
+- Datentyp
+- Measurement
+- Field
 
-### Language & Environment:
-Written entirely in JavaScript using Node.js and the official InfluxDB v2 client
-.
+Nur aktivierte Sensoren werden verarbeitet.
 
-### ioBroker Core:
-Utilizes @iobroker/adapter-core for adapter lifecycle management and state handling.
+---
 
-### State Management:
-Creates or extends ioBroker states dynamically using setObject and extendObject.
+### Laufzeitverhalten
+1. Adapter startet
+2. InfluxDB-Verbindung wird geprüft
+3. Sensor-Datenpunkte werden angelegt oder aktualisiert
+4. Fremde States werden abonniert
+5. Änderungen aktualisieren den internen Cache
+6. Cache wird zyklisch nach InfluxDB geschrieben
 
-### Subscriptions:
-Efficient subscription to source states ensures immediate cache updates on value changes.
+---
 
-### Data Types:
-Supports robust type mapping to handle integer, float, boolean, and string data seamlessly.
+### Entwicklerhinweise
+- Adapter nutzt **Compact Mode**
+- `extendObject()` aktualisiert bestehende States
+- Interner Cache reduziert Zugriffe
+- Sauberes Unload-Handling
+- Reines JavaScript (kein TypeScript zur Laufzeit)
 
-### Error Handling:
-Logs detailed error messages and updates info.connection accordingly for transparent operation.
+---
 
-### Testing:
-Connection tested with a minimal InfluxDB point on startup for early failure detection.
+### Voraussetzungen
+- ioBroker >= aktuelle stabile Version
+- Node.js >= 18
+- InfluxDB 2.x
 
-### Extensibility:
-Easily add new sensors by modifying the JSON config or the admin UI sensor table.
-
-### Shutdown Process:
-Clears intervals, unsubscribes from states, and closes the InfluxDB client gracefully to avoid resource leaks.
-
-## 📚 Resources
-
-ioBroker Adapter Development Docs
-
-InfluxDB JavaScript Client GitHub
-
-InfluxDB v2 API Documentation
-
-Grafana - Visualize InfluxDB Data
-
-## 🛡️ License
-
-This project is licensed under the MIT License – see the LICENSE
- file for details.
-
-## ❤️ Contributing
-
-Contributions are welcome! Please:
-
-- Fork the repository
-
-- Create a feature branch (git checkout -b feature/YourFeature)
-
-- Commit your changes (git commit -m 'Add your feature')
-
-- Push to the branch (git push origin feature/YourFeature)
-
-- Open a Pull Request on GitHub
-
-For major changes, please open an issue first to discuss what you would like to change.
-
-Happy monitoring with Solectrus & InfluxDB! 📊⚡
+---
 
 ## Changelog
 <!--
