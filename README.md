@@ -178,6 +178,11 @@ Nur aktivierte Sensoren werden verarbeitet.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (patricknitsch) add more Debugging
+* (patricknitsch) optimize translation
+
 ### 0.1.0 (2026-01-14)
 * (patricknitsch) initial release
 
