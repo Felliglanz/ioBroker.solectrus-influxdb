@@ -10,100 +10,138 @@
 
 **Tests:** ![Test and Release](https://github.com/patricknitsch/ioBroker.solectrus-influxdb/workflows/Test%20and%20Release/badge.svg)
 
-## solectrus-influxdb adapter for ioBroker
+🟢 ioBroker Solectrus-InfluxDB Adapter
 
-Configure Sensors for Solectrus and push to InfluxDB
+Warning: This repository is experimental and unsupported; do not use it in production.
 
-## Developer manual
-This section is intended for the developer. It can be deleted later.
+🚀 Overview
 
-### DISCLAIMER
+The Solectrus-InfluxDB adapter is designed to bridge ioBroker states—especially from Solar inverters and energy devices—to an InfluxDB time-series database with minimal configuration. It's based on the HA-Integration from Solectrus to push states to Influx for Solectrus Dashboard.
 
-Please make sure that you consider copyrights and trademarks when you use names or logos of a company and add a disclaimer to your README.
-You can check other adapters for examples or ask in the developer community. Using a name or logo of a company without permission may cause legal problems for you.
+By continuously polling configured ioBroker states, caching the data, and writing timestamped measurements to InfluxDB, this adapter enables:
 
-### Getting started
+Powerful time-series analytics
 
-You are almost done, only a few steps left:
-1. Create a new repository on GitHub with the name `ioBroker.solectrus-influxdb`
-1. Initialize the current folder as a new git repository:  
-	```bash
-	git init -b main
-	git add .
-	git commit -m "Initial commit"
-	```
-1. Link your local repository with the one on GitHub:  
-	```bash
-	git remote add origin https://github.com/patricknitsch/ioBroker.solectrus-influxdb
-	```
+Integration with Grafana or other visualization tools
 
-1. Push all files to the GitHub repo:  
-	```bash
-	git push origin main
-	```
-1. Add a new secret under https://github.com/patricknitsch/ioBroker.solectrus-influxdb/settings/secrets. It must be named `AUTO_MERGE_TOKEN` and contain a personal access token with push access to the repository, e.g. yours. You can create a new token under https://github.com/settings/tokens.
+Historical energy system monitoring
 
-1. Head over to [main.js](main.js) and start programming!
+⚙️ Features
 
-### Best Practices
-We've collected some [best practices](https://github.com/ioBroker/ioBroker.repositories#development-and-coding-best-practices) regarding ioBroker development and coding in general. If you're new to ioBroker or Node.js, you should
-check them out. If you're already experienced, you should also take a look at them - you might learn something new :)
+🎯 Multiple sensor support: Easily configure dozens of sensors with their data types and mappings
 
-### State Roles
-When creating state objects, it is important to use the correct role for the state. The role defines how the state should be interpreted by visualizations and other adapters. For a list of available roles and their meanings, please refer to the [state roles documentation](https://www.iobroker.net/#en/documentation/dev/stateroles.md).
+🔄 Dynamic state creation & extension: Automatically create ioBroker states or extend existing ones for sensor data
 
-**Important:** Do not invent your own custom role names. If you need a role that is not part of the official list, please contact the ioBroker developer community for guidance and discussion about adding new roles.
+⏱️ Configurable polling interval (5-30 seconds) for flexible data write frequency
 
-### Scripts in `package.json`
-Several npm scripts are predefined for your convenience. You can run them using `npm run <scriptname>`
-| Script name | Description |
-|-------------|-------------|
-| `test:js` | Executes the tests you defined in `*.test.js` files. |
-| `test:package` | Ensures your `package.json` and `io-package.json` are valid. |
-| `test:integration` | Tests the adapter startup with an actual instance of ioBroker. |
-| `test` | Performs a minimal test run on package files and your tests. |
-| `check` | Performs a type-check on your code (without compiling anything). |
-| `lint` | Runs `ESLint` to check your code for formatting errors and potential bugs. |
-| `translate` | Translates texts in your adapter to all required languages, see [`@iobroker/adapter-dev`](https://github.com/ioBroker/adapter-dev#manage-translations) for more details. |
-| `release` | Creates a new release, see [`@alcalzone/release-script`](https://github.com/AlCalzone/release-script#usage) for more details. |
+🔗 InfluxDB v2+ native support using official @influxdata/influxdb-client
 
-### Writing tests
-When done right, testing code is invaluable, because it gives you the 
-confidence to change your code while knowing exactly if and when 
-something breaks. A good read on the topic of test-driven development 
-is https://hackernoon.com/introduction-to-test-driven-development-tdd-61a13bc92d92. 
-Although writing tests before the code might seem strange at first, but it has very 
-clear upsides.
+✔️ Connection health monitoring via the info.connection state
 
-The template provides you with basic tests for the adapter startup and package files.
-It is recommended that you add your own tests into the mix.
+🧹 Graceful shutdown with clean resource release and unsubscribe mechanisms
 
-### Publishing the adapter
-Using GitHub Actions, you can enable automatic releases on npm whenever you push a new git tag that matches the form 
-`v<major>.<minor>.<patch>`. We **strongly recommend** that you do. The necessary steps are described in `.github/workflows/test-and-release.yml`.
+✨ User-defined sensors for custom measurements tailored to your needs
 
-Since you installed the release script, you can create a new
-release simply by calling:
-```bash
-npm run release
-```
-Additional command line options for the release script are explained in the
-[release-script documentation](https://github.com/AlCalzone/release-script#command-line).
+🛠️ Robust error handling and debug logging
 
-To get your adapter released in ioBroker, please refer to the documentation 
-of [ioBroker.repositories](https://github.com/ioBroker/ioBroker.repositories#requirements-for-adapter-to-get-added-to-the-latest-repository).
+🛠️ Configuration
 
-### Test the adapter manually with dev-server
-Since you set up `dev-server`, you can use it to run, test and debug your adapter.
+Configure the adapter via the ioBroker admin UI with two main tabs:
 
-You may start `dev-server` by calling from your dev directory:
-```bash
-dev-server watch
-```
+InfluxDB Settings
+🔑 Parameter	📝 Description
+InfluxDB URL	URL of your InfluxDB instance
+Organization	InfluxDB organization name
+Bucket	Bucket name to write data into
+Token	Secure API token for InfluxDB
+Polling Interval	Interval (seconds) between writes (default 5, min 5, max 30)
+Sensors Settings
+🔧 Field	📖 Description
+Enabled	Enable or disable individual sensors
+Sensor Name	Human-readable name for the sensor
+ioBroker Source State	ioBroker state ID to read data from
+Datatype	Data type in InfluxDB (int, float, bool, string)
+Influx Measurement	Measurement name in InfluxDB
+Influx Field	Field name for the measurement
+🧩 How It Works
 
-The ioBroker.admin interface will then be available at http://localhost:undefined/
+Initialization
+Validates InfluxDB configuration and establishes a connection with a test write.
 
-Please refer to the [`dev-server` documentation](https://github.com/ioBroker/dev-server#command-line) for more details.
+Sensor Setup
+Prepares sensor states in ioBroker (creates or updates) and subscribes to their source states.
+
+State Changes
+When subscribed source states update, the adapter caches new values and reflects changes in corresponding sensor states.
+
+Data Writing
+At configured intervals, cached sensor data is written as timestamped points into InfluxDB.
+
+Monitoring
+Adapter connection health is reflected in info.connection for easy monitoring.
+
+🧑‍💻 Developer Notes
+
+Language & Environment:
+Written entirely in JavaScript using Node.js and the official InfluxDB v2 client
+.
+
+ioBroker Core:
+Utilizes @iobroker/adapter-core for adapter lifecycle management and state handling.
+
+State Management:
+Creates or extends ioBroker states dynamically using setObject and extendObject.
+
+Subscriptions:
+Efficient subscription to source states ensures immediate cache updates on value changes.
+
+Data Types:
+Supports robust type mapping to handle integer, float, boolean, and string data seamlessly.
+
+Error Handling:
+Logs detailed error messages and updates info.connection accordingly for transparent operation.
+
+Testing:
+Connection tested with a minimal InfluxDB point on startup for early failure detection.
+
+Extensibility:
+Easily add new sensors by modifying the JSON config or the admin UI sensor table.
+
+Shutdown Process:
+Clears intervals, unsubscribes from states, and closes the InfluxDB client gracefully to avoid resource leaks.
+
+📚 Resources
+
+ioBroker Adapter Development Docs
+
+InfluxDB JavaScript Client GitHub
+
+InfluxDB v2 API Documentation
+
+Grafana - Visualize InfluxDB Data
+
+🛡️ License
+
+This project is licensed under the MIT License – see the LICENSE
+ file for details.
+
+❤️ Contributing
+
+Contributions are welcome! Please:
+
+- Fork the repository
+
+- Create a feature branch (git checkout -b feature/YourFeature)
+
+- Commit your changes (git commit -m 'Add your feature')
+
+- Push to the branch (git push origin feature/YourFeature)
+
+- Open a Pull Request on GitHub
+
+For major changes, please open an issue first to discuss what you would like to change.
+
+Happy monitoring with Solectrus & InfluxDB! 📊⚡
 
 ## Changelog
 <!--
