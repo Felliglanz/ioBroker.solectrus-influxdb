@@ -23,6 +23,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		this.cache = {};
 		this.timer = null;
 		this.isUnloading = false;
+		this.sourceToSensorId = {};
 
 		this.on('ready', this.onReady.bind(this));
 		this.on('unload', this.onUnload.bind(this));
@@ -115,10 +116,13 @@ class SolectrusInfluxdb extends utils.Adapter {
 				string: 'string',
 			};
 
-			// Verwenden Sie den in der Konfiguration gewählten Typ
-			let iobType = typeMapping[sensor.type] || 'mixed';
+			// Use configured type
+			const iobType = typeMapping[sensor.type] || 'mixed';
 
-			await this.setObjectNotExistsAsync(id, {
+			const obj = await this.getObjectAsync(id);
+
+			/** @type {ioBroker.SettableStateObject} */
+			const newObj = {
 				type: 'state',
 				common: {
 					name: sensor.SensorName,
@@ -130,7 +134,25 @@ class SolectrusInfluxdb extends utils.Adapter {
 				native: {
 					sourceState: sensor.sourceState,
 				},
-			});
+			};
+
+			if (!obj) {
+				this.setObject(id, newObj);
+			} else {
+				this.extendObject(id, newObj);
+			}
+
+			if (!sensor.sourceState) {
+				continue;
+			}
+
+			const foreignObj = await this.getForeignObjectAsync(sensor.sourceState);
+			if (!foreignObj) {
+				this.log.warn(`Source state not found: ${sensor.sourceState}`);
+				continue;
+			}
+
+			this.sourceToSensorId[sensor.sourceState] = id;
 
 			if (sensor.sourceState) {
 				const obj = await this.getForeignObjectAsync(sensor.sourceState);
@@ -151,14 +173,17 @@ class SolectrusInfluxdb extends utils.Adapter {
 	}
 
 	onStateChange(id, state) {
-		if (!state || this.isUnloading || state.ack) {
+		if (!state || this.isUnloading) {
 			return;
 		}
 
-		if (Object.prototype.hasOwnProperty.call(this.cache, id)) {
-			this.cache[id] = state.val;
-			this.setState(id, state.val, true);
+		const sensorId = this.sourceToSensorId[id];
+		if (!sensorId) {
+			return;
 		}
+
+		this.cache[sensorId] = state.val;
+		this.setState(sensorId, state.val, true);
 	}
 
 	async writeInflux() {
