@@ -181,6 +181,10 @@ Nur aktivierte Sensoren werden verarbeitet.
 
 ### **WORK IN PROGRESS**
 
+* (patricknitsch) Bugfix for License
+* (patricknitsch) Bugfix for Interval
+* (patricknitsch) Synchronize Names, Measurements and Fields to SOLECTRUS Documentation
+
 ### 0.1.2 (2026-01-14)
 * (patricknitsch) change UI to look for Source in Tree
 
