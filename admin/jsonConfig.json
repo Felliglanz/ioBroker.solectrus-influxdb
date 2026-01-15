@@ -80,8 +80,10 @@
           "type": "table",
           "label": "SOLECTRUS Sensors",
           "sm": 12,
-          "md": 12,
-          "lg": 12,
+          "md": 6,
+          "lg": 4,
+          "xs": 12,
+          "xl": 4,
           "items": [
             {
               "attr": "enabled",

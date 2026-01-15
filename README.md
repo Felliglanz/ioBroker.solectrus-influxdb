@@ -189,3 +189,5 @@ Nur aktivierte Sensoren werden verarbeitet.
 * (patricknitsch) initial release
 
 ## License
+
+Copyright (c) 2026 patricknitsch <patricknitsch@web.de>
