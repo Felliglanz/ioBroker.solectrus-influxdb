@@ -121,49 +121,49 @@
 							"enabled": false,
 							"SensorName": "INVERTER_POWER",
 							"sourceState": "",
-							"type": "float",
-							"measurement": "piko20",
-							"field": "output_power"
+							"type": "int",
+							"measurement": "inverter",
+							"field": "power"
 						},
 						{
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_1",
 							"sourceState": "",
-							"type": "float",
-							"measurement": "piko20",
-							"field": "dc1_power"
+							"type": "int",
+							"measurement": "inverter_1",
+							"field": "power"
 						},
 						{
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_2",
 							"sourceState": "",
-							"type": "float",
-							"measurement": "piko20",
-							"field": "dc2_power"
+							"type": "int",
+							"measurement": "inverter_2",
+							"field": "power"
 						},
 						{
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_3",
 							"sourceState": "",
-							"type": "float",
-							"measurement": "piko20",
-							"field": "dc3_power"
+							"type": "int",
+							"measurement": "inverter_3",
+							"field": "power"
 						},
 						{
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_4",
 							"sourceState": "",
 							"type": "int",
-							"measurement": "piko20",
-							"field": "dc4_power"
+							"measurement": "inverter_4",
+							"field": "power"
 						},
 						{
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_5",
 							"sourceState": "",
 							"type": "int",
-							"measurement": "piko20",
-							"field": "dc5_power"
+							"measurement": "inverter_5",
+							"field": "power"
 						},
 						{
 							"enabled": false,
@@ -249,7 +249,7 @@
 							"enabled": false,
 							"SensorName": "HEATPUMP_POWER",
 							"sourceState": "",
-							"type": "float",
+							"type": "int",
 							"measurement": "heatpump",
 							"field": "power"
 						},
@@ -258,7 +258,7 @@
               "SensorName": "CUSTOM_POWER_01",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom01",
+              "measurement": "custom_01",
               "field": "power"
             },
             {
@@ -266,7 +266,7 @@
               "SensorName": "CUSTOM_POWER_02",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom02",
+              "measurement": "custom_02",
               "field": "power"
             },
             {
@@ -274,7 +274,7 @@
               "SensorName": "CUSTOM_POWER_03",
               "sourceState": "",
               "type": "float",
-              "measurement": "custom03",
+              "measurement": "custom_03",
               "field": "power"
             },
             {
@@ -282,7 +282,7 @@
               "SensorName": "CUSTOM_POWER_04",
               "sourceState": "",
               "type": "float",
-              "measurement": "custom04",
+              "measurement": "custom_04",
               "field": "power"
             },
             {
@@ -290,7 +290,7 @@
               "SensorName": "CUSTOM_POWER_05",
               "sourceState": "",
               "type": "float",
-              "measurement": "custom05",
+              "measurement": "custom_05",
               "field": "power"
             },
             {
@@ -298,7 +298,7 @@
               "SensorName": "CUSTOM_POWER_06",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom06",
+              "measurement": "custom_06",
               "field": "power"
             },
             {
@@ -306,7 +306,7 @@
               "SensorName": "CUSTOM_POWER_07",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom07",
+              "measurement": "custom_07",
               "field": "power"
             },
             {
@@ -314,7 +314,7 @@
               "SensorName": "CUSTOM_POWER_08",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom08",
+              "measurement": "custom_08",
               "field": "power"
             },
             {
@@ -322,7 +322,7 @@
               "SensorName": "CUSTOM_POWER_09",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom09",
+              "measurement": "custom_09",
               "field": "power"
             },
             {
@@ -330,7 +330,7 @@
               "SensorName": "CUSTOM_POWER_10",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom10",
+              "measurement": "custom_10",
               "field": "power"
             },
             {
@@ -338,7 +338,7 @@
               "SensorName": "CUSTOM_POWER_11",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom11",
+              "measurement": "custom_11",
               "field": "value"
             },
             {
@@ -346,7 +346,7 @@
               "SensorName": "CUSTOM_POWER_12",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom12",
+              "measurement": "custom_12",
               "field": "value"
             },
             {
@@ -354,7 +354,7 @@
               "SensorName": "CUSTOM_POWER_13",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom13",
+              "measurement": "custom_13",
               "field": "value"
             },
             {
@@ -362,7 +362,7 @@
               "SensorName": "CUSTOM_POWER_14",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom14",
+              "measurement": "custom_14",
               "field": "value"
             },
             {
@@ -370,7 +370,7 @@
               "SensorName": "CUSTOM_POWER_15",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom15",
+              "measurement": "custom_15",
               "field": "value"
             },
             {
@@ -378,7 +378,7 @@
               "SensorName": "CUSTOM_POWER_16",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom16",
+              "measurement": "custom_16",
               "field": "value"
             },
             {
@@ -386,7 +386,7 @@
               "SensorName": "CUSTOM_POWER_17",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom17",
+              "measurement": "custom_17",
               "field": "value"
             },
             {
@@ -394,7 +394,7 @@
               "SensorName": "CUSTOM_POWER_18",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom18",
+              "measurement": "custom_18",
               "field": "value"
             },
             {
@@ -402,7 +402,7 @@
               "SensorName": "CUSTOM_POWER_19",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom19",
+              "measurement": "custom_19",
               "field": "value"
             },
             {
@@ -410,7 +410,7 @@
               "SensorName": "CUSTOM_POWER_20",
               "sourceState": "",
               "type": "int",
-              "measurement": "custom20",
+              "measurement": "custom_20",
               "field": "value"
             },
 						{
@@ -436,6 +436,14 @@
 							"type": "float",
 							"measurement": "car",
 							"field": "battery_soc"
+						},
+            {
+							"enabled": false,
+							"SensorName": "CAR_MILEAGE",
+							"sourceState": "",
+							"type": "int",
+							"measurement": "car",
+							"field": "mileage"
 						},
 						{
 							"enabled": false,
@@ -474,16 +482,16 @@
 							"SensorName": "INVERTER_POWER_FORECAST",
 							"sourceState": "",
 							"type": "int",
-							"measurement": "pv_forecast",
-							"field": "forecast"
+							"measurement": "inverter_forecast",
+							"field": "power"
 						},
 						{
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_FORECAST_CLEARSKY",
 							"sourceState": "",
 							"type": "int",
-							"measurement": "pv_forecast",
-							"field": "forecast_clear_sky"
+							"measurement": "inverter_forecast_clearsky",
+							"field": "power"
 						},
 						{
 							"enabled": false,
