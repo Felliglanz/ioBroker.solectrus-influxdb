@@ -82,8 +82,6 @@
           "sm": 12,
           "md": 6,
           "lg": 4,
-          "xs": 12,
-          "xl": 12,
           "items": [
             {
               "attr": "enabled",
