@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "solectrus-influxdb",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "news": {
+      "0.1.3": {
+        "en": "Bugfix for License\nBugfix for Interval\nSynchronize Names, Measurements and Fields to SOLECTRUS Documentation",
+        "de": "Bugfix für die Lizenz\nBugfix für Intervall\nSynchronisieren von Namen, Messungen und Feldern zu SOLECTRUS Dokumentation",
+        "ru": "Bugfix для лицензии\nBugfix для Интервал\nСинхронизация имен, измерений и полей с документацией SOLECTRUS",
+        "pt": "Correção de Erros para a Licença\nCorreção de Erros para Intervalo\nSincronizar Nomes, Medições e Campos para Documentação SOLECTRUS",
+        "nl": "Bugfix voor licentie\nBugfix voor Interval\nNames, metingen en velden synchroniseren naar SOLECTRUS-documentatie",
+        "fr": "Correction de bogue pour la licence\nBugfix pour Interval\nSynchroniser les noms, les mesures et les champs vers la documentation SOLECTRUS",
+        "it": "Bugfix per la licenza\nBugfix per Interval\nSincronizza nomi, misure e campi alla documentazione SOLECTRUS",
+        "es": "Bugfix para licencia\nBugfix para Interval\nSincronizar Nombres, Medidas y Campos a la Documentación SOLECTRUS",
+        "pl": "Bugfix dla licencji\nBugfix dla Interval\nSynchronizacja nazw, pomiarów i pól do dokumentacji SOLECTRUS",
+        "uk": "Помилки для ліцензії\nВиправлення помилок для Interval\nСинхронізувати назви, вимірювання та поля до документації SOLECTRUS",
+        "zh-cn": "许可证的错误修正\nInterval 的错误修正\n将名称、测量和字段同步到 SOLECTRUS 文档"
+      },
       "0.1.2": {
         "en": "change UI to look for Source in Tree",
         "de": "ändern UI nach Quelle in Baum suchen",
