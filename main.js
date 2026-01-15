@@ -49,6 +49,10 @@ class SolectrusInfluxdb extends utils.Adapter {
 		});
 		this.setState('info.connection', false, true);
 
+		const intervalSec = Number(this.config.interval);
+		const interval = Number.isFinite(intervalSec) && intervalSec > 0 ? intervalSec : 5;
+		this.log.debug(`Using interval: ${interval}s`);
+
 		if (!this.validateInfluxConfig()) {
 			this.log.error('InfluxDB configuration incomplete. Adapter will stop.');
 			this.timer = setInterval(() => {}, 60 * 1000);
@@ -65,18 +69,15 @@ class SolectrusInfluxdb extends utils.Adapter {
 		await this.prepareSensors();
 
 		// Write States all seconds (default 5)
-		this.timer = setInterval(
-			() => {
-				(async () => {
-					try {
-						await this.writeInflux();
-					} catch (err) {
-						this.log.error(`Error in writeInflux: ${err}`);
-					}
-				})();
-			},
-			(this.config.interval || 5) * 1000,
-		);
+		this.timer = setInterval(() => {
+			(async () => {
+				try {
+					await this.writeInflux();
+				} catch (err) {
+					this.log.error(`Error in writeInflux: ${err}`);
+				}
+			})();
+		}, this.config.interval * 1000);
 
 		this.log.info('Adapter started successfully');
 	}
