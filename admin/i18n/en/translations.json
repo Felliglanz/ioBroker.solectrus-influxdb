@@ -4,7 +4,8 @@
   "Organizaton": "Organization",
   "Bucket": "Bucket",
   "Token": "Token",
-  "Polling Intervall (s)": "Polling interval (s)",
+  "Polling Interval (s)": "Polling interval (s)",
+  "Flush Interval (s)": "Flush interval (s)",
 
   "SOLECTRUS Sensors": "SOLECTRUS sensors",
   "Active": "Enabled",
@@ -44,7 +45,6 @@
   "WALLBOX_CAR_CONNECTED": "WALLBOX_CAR_CONNECTED",
   "CASE_TEMP": "CASE_TEMP",
   "CAR_BATTERY_SOC": "CAR_BATTERY_SOC",
-  "CAR_MILEAGE": "CAR_MILEAGE",
   "OUTDOOR_TEMP": "OUTDOOR_TEMP",
   "SYSTEM_STATUS": "SYSTEM_STATUS",
   "SYSTEM_STATUS_OK": "SYSTEM_STATUS_OK",
