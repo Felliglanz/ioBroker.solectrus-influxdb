@@ -9,7 +9,7 @@
 
 **Tests:** ![Test and Release](https://github.com/patricknitsch/ioBroker.solectrus-influxdb/workflows/Test%20and%20Release/badge.svg)
 
-# 🌞 Solectrus InfluxDB Adapter for ioBroker
+# 🌞 SOLECTRUS InfluxDB Adapter for ioBroker
 
 ![ioBroker](https://img.shields.io/badge/ioBroker-Adapter-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-green)
@@ -21,9 +21,9 @@
 ## 🇬🇧 English
 
 ### Overview
-The **Solectrus InfluxDB Adapter** connects ioBroker states to **InfluxDB 2.x**.  
-It allows you to define sensors via `jsonConfig`, subscribe to foreign states, mirror them as adapter states, and periodically write them into InfluxDB. The adpater based on the HA-integration from @ledermann. The datas should be write into the InfluxDB from Solectrus, but can als written into any other Influx DB.
-Der Adapter basiert auf der HA-Integration Solectrus von @ledermann. Die Daten sollen in die InfluxDB von Solectrus geschrieben werden, können aber auch für andere InfluxDB's verwendet werden.
+The **SOLECTRUS InfluxDB Adapter** connects ioBroker states to **InfluxDB 2.x**.  
+It allows you to define sensors via `jsonConfig`, subscribe to foreign states, mirror them as adapter states, and periodically write them into InfluxDB. The adpater based on the HA-integration from @ledermann. The datas should be write into the InfluxDB from SOLECTRUS, but can als written into any other Influx DB.
+Der Adapter basiert auf der HA-Integration SOLECTRUS von @ledermann. Die Daten sollen in die InfluxDB von SOLECTRUS geschrieben werden, können aber auch für andere InfluxDB's verwendet werden.
 
 Typical use cases:
 - Photovoltaics (inverters, forecasts)
@@ -99,8 +99,8 @@ Only enabled sensors are processed.
 ## 🇩🇪 Deutsch
 
 ### Überblick
-Der **Solectrus InfluxDB Adapter** verbindet ioBroker-Datenpunkte mit **InfluxDB 2.x**.  
-Sensoren werden über die Admin-Oberfläche konfiguriert, fremde States abonniert, intern gespiegelt und zyklisch nach InfluxDB geschrieben. Der Adapter basiert auf der HA-Integration Solectrus von @ledermann. Die Daten sollen in die InfluxDB von Solectrus geschrieben werden, können aber auch für andere InfluxDB's verwendet werden.
+Der **SOLECTRUS InfluxDB Adapter** verbindet ioBroker-Datenpunkte mit **InfluxDB 2.x**.  
+Sensoren werden über die Admin-Oberfläche konfiguriert, fremde States abonniert, intern gespiegelt und zyklisch nach InfluxDB geschrieben. Der Adapter basiert auf der HA-Integration SOLECTRUS von @ledermann. Die Daten sollen in die InfluxDB von SOLECTRUS geschrieben werden, können aber auch für andere InfluxDB's verwendet werden.
 
 Typische Einsatzbereiche:
 - Photovoltaik (Wechselrichter, Prognosen)
