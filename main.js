@@ -49,7 +49,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		});
 		this.setState('info.connection', false, true);
 
-		const intervalSec = Number(this.config.interval);
+		const intervalSec = Number(this.config.influx?.interval);
 		const interval = Number.isFinite(intervalSec) && intervalSec > 0 ? intervalSec : 5;
 		this.log.debug(`Using interval: ${interval}s`);
 
@@ -77,14 +77,13 @@ class SolectrusInfluxdb extends utils.Adapter {
 					this.log.error(`Error in writeInflux: ${err}`);
 				}
 			})();
-		}, this.config.interval * 1000);
+		}, interval * 1000);
 
 		this.log.info('Adapter started successfully');
 	}
 
 	validateInfluxConfig() {
 		const cfg = this.config.influx;
-		this.log.debug(`Status Polling Time: ${this.config.interval}`);
 		this.log.debug(`Current Status of cfg: ${cfg.bucket} | ${cfg.token} | ${cfg.url} | ${cfg.org}`);
 		return cfg && cfg.url?.trim() && cfg.token?.trim() && cfg.org?.trim() && cfg.bucket?.trim();
 	}

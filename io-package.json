@@ -120,12 +120,12 @@
     ]
   },
   "native": {
-    "interval": 5,
     "influx": {
       "url": "http://localhost:8086",
       "org": "solectrus",
       "bucket": "solectrus",
-      "token": ""
+      "token": "",
+      "interval": 5
     },
     "sensors": [
       {
