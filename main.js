@@ -350,7 +350,6 @@ class SolectrusInfluxdb extends utils.Adapter {
 				continue;
 			}
 
-			this.log.debug(`Write point: ${id} : ${value} to: ${sensor.measurement} : ${sensor.field}`);
 			this.buffer.push({
 				measurement: sensor.measurement,
 				field: sensor.field,
@@ -411,6 +410,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 						point.stringField(entry.field, String(entry.value));
 				}
 
+				this.log.debug(`Write point: ${entry.id} : ${entry.value} to: ${entry.measurement} : ${entry.field}`);
 				writeApi.writePoint(point);
 			}
 
@@ -426,6 +426,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		} catch (err) {
 			this.log.warn(`Flush failed: ${err.message}`);
 			await this.closeWriteApi();
+			await this.clearBuffer();
 			this.handleFlushFailure();
 		}
 	}
