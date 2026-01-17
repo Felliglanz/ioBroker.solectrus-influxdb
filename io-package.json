@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "solectrus-influxdb",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "news": {
+      "0.1.5": {
+        "en": "Improve sensor configuration UI (accordion)",
+        "de": "Verbessern Sie die Sensorkonfiguration UI (Aufzeichnung)",
+        "ru": "Улучшение конфигурации датчика UI (аккордеон)",
+        "pt": "Melhorar a configuração do sensor UI (acordão)",
+        "nl": "Verbeter sensorconfiguratie UI (accordion)",
+        "fr": "Améliorer la configuration du capteur UI (accordement)",
+        "it": "Migliorare la configurazione del sensore UI (secondo)",
+        "es": "Mejorar la configuración de sensores UI (accordión)",
+        "pl": "Ulepszenie konfiguracji czujnika UI (akordeon)",
+        "uk": "Покращення конфігурації датчика UI (акордеон)",
+        "zh-cn": "改进传感器配置 UI (accordion)"
+      },
       "0.1.4": {
         "en": "Bugfix with Icon",
         "de": "Bugfix mit Icon",
