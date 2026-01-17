@@ -48,6 +48,24 @@ class SolectrusInfluxdb extends utils.Adapter {
 	 * HELPERS
 	 * ===================================================== */
 
+	parseFieldTypeConflictError(err) {
+		if (!err || !err.message) {
+			return null;
+		}
+
+		const regex = /field type conflict: input field "([^"]+)" on measurement "([^"]+)"/i;
+		const match = err.message.match(regex);
+
+		if (!match) {
+			return null;
+		}
+
+		return {
+			field: match[1], // z.B. inverter_power
+			measurement: match[2], // z.B. KOSTAL
+		};
+	}
+
 	getSensorStateId(sensor) {
 		return `sensors.${sensor.SensorName.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
 	}
@@ -74,14 +92,6 @@ class SolectrusInfluxdb extends utils.Adapter {
 	/* =====================================================
 	 * BUFFER (PERSISTENT)
 	 * ===================================================== */
-
-	disableSensorsFromBuffer(reason) {
-		const affected = new Set(this.buffer.map(b => b.id));
-
-		for (const sensorName of affected) {
-			this.disableSensor(sensorName, reason);
-		}
-	}
 
 	async clearBuffer() {
 		this.log.info('Clear Buffer...');
@@ -244,7 +254,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 			this.log.info('InfluxDB connection verified');
 			return true;
 		} catch (err) {
-			this.log.warn(`Influx verification failed: ${err.message}`);
+			this.log.error(`Influx verification failed: ${err.message}`);
 			this.influxVerified = false;
 			await this.closeWriteApi();
 			this.setState('info.connection', false, true);
@@ -348,18 +358,25 @@ class SolectrusInfluxdb extends utils.Adapter {
 		}
 	}
 
-	disableSensor(sensorName, reason) {
-		const sensor = this.config.sensors.find(s => s.SensorName === sensorName);
+	disableSensorByFieldTypeConflict(err) {
+		const conflict = this.parseFieldTypeConflictError(err);
+		if (!conflict) {
+			return;
+		}
+
+		const { measurement, field } = conflict;
+
+		const sensor = this.config.sensors.find(s => s.measurement === measurement && s.field === field);
+
 		if (!sensor) {
+			this.log.warn(`Kein Sensor für Messung "${measurement}" und Feld "${field}" gefunden.`);
 			return;
 		}
 
 		sensor.enabled = false;
 
-		const msg = `Sensor "${sensorName}" wurde deaktiviert (${reason})`;
-		this.log.warn(msg);
-
-		// Info-State aktualisieren
+		const msg = `Sensor "${sensor.SensorName}" wurde deaktiviert wegen Field-Type-Conflict (Messung: ${measurement}, Feld: ${field})`;
+		this.log.error(msg);
 		this.setState('info.lastError', msg, true);
 	}
 
@@ -412,7 +429,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 			});
 
 			if (this.buffer.length > this.maxBufferSize) {
-				this.log.error('Buffer limit reached – dropping oldest entries');
+				this.log.warn('Buffer limit reached – dropping oldest entries');
 				this.buffer.splice(0, this.buffer.length - this.maxBufferSize);
 			}
 		}
@@ -482,13 +499,13 @@ class SolectrusInfluxdb extends utils.Adapter {
 			this.setState('info.connection', true, true);
 			this.scheduleNextFlush(this.getFlushInterval());
 		} catch (err) {
-			this.log.warn(`Flush failed: ${err.message}`);
+			this.log.error(`Flush failed: ${err.message}`);
 			await this.closeWriteApi();
 
 			if (this.isFieldTypeConflict(err)) {
 				this.log.error('Field type conflict detected – disabling affected sensors');
 
-				this.disableSensorsFromBuffer('InfluxDB field type conflict');
+				this.disableSensorByFieldTypeConflict(err);
 
 				await this.clearBuffer();
 			}
