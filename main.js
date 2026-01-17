@@ -66,6 +66,13 @@ class SolectrusInfluxdb extends utils.Adapter {
 	 * BUFFER (PERSISTENT)
 	 * ===================================================== */
 
+	async clearBuffer() {
+		this.buffer = [];
+		this.saveBuffer();
+		this.updateBufferStates();
+		this.log.info('Buffer manuell gelöscht.');
+	}
+
 	loadBuffer() {
 		try {
 			if (fs.existsSync(this.bufferFile)) {
@@ -157,6 +164,18 @@ class SolectrusInfluxdb extends utils.Adapter {
 				role: 'text',
 				read: true,
 				write: false,
+			},
+			native: {},
+		});
+
+		await this.setObjectNotExistsAsync('info.buffer.clear', {
+			type: 'state',
+			common: {
+				name: 'Buffer manuell löschen',
+				type: 'boolean',
+				role: 'button',
+				read: false,
+				write: true,
 			},
 			native: {},
 		});
@@ -289,6 +308,11 @@ class SolectrusInfluxdb extends utils.Adapter {
 		if (!state || this.isUnloading) {
 			return;
 		}
+		if (id === `${this.namespace}.info.buffer.clear` && state.val === true) {
+			this.clearBuffer();
+			this.setState('info.buffer.clear', false, true); // Reset Button
+			return;
+		}
 
 		const sensorId = this.sourceToSensorId[id];
 		if (!sensorId) {
@@ -318,6 +342,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 				continue;
 			}
 
+			this.log.debug(`Write point: ${id} : ${value} to: ${sensor.measurement} : ${sensor.field}`);
 			this.buffer.push({
 				measurement: sensor.measurement,
 				field: sensor.field,
