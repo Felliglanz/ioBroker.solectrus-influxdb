@@ -75,6 +75,14 @@ class SolectrusInfluxdb extends utils.Adapter {
 	 * BUFFER (PERSISTENT)
 	 * ===================================================== */
 
+	disableSensorsFromBuffer(reason) {
+		const affected = new Set(this.buffer.map(b => b.id));
+
+		for (const sensorName of affected) {
+			this.disableSensor(sensorName, reason);
+		}
+	}
+
 	async clearBuffer() {
 		this.log.info('Clear Buffer...');
 		this.buffer = [];
@@ -123,6 +131,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		await this.createInfoStates();
 
 		this.setState('info.connection', false, true);
+		this.setState('info.lastError', '', true);
 
 		this.loadBuffer();
 		this.updateBufferStates();
@@ -195,6 +204,18 @@ class SolectrusInfluxdb extends utils.Adapter {
 			native: {},
 		});
 		this.subscribeStates('info.buffer.clear');
+
+		await this.setObjectNotExistsAsync('info.lastError', {
+			type: 'state',
+			common: {
+				name: 'Letzter Fehler',
+				type: 'string',
+				role: 'text',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
 	}
 
 	validateInfluxConfig() {
@@ -327,6 +348,21 @@ class SolectrusInfluxdb extends utils.Adapter {
 		}
 	}
 
+	disableSensor(sensorName, reason) {
+		const sensor = this.config.sensors.find(s => s.SensorName === sensorName);
+		if (!sensor) {
+			return;
+		}
+
+		sensor.enabled = false;
+
+		const msg = `Sensor "${sensorName}" wurde deaktiviert (${reason})`;
+		this.log.warn(msg);
+
+		// Info-State aktualisieren
+		this.setState('info.lastError', msg, true);
+	}
+
 	onStateChange(id, state) {
 		if (!state || this.isUnloading) {
 			return;
@@ -450,9 +486,11 @@ class SolectrusInfluxdb extends utils.Adapter {
 			await this.closeWriteApi();
 
 			if (this.isFieldTypeConflict(err)) {
+				this.log.error('Field type conflict detected – disabling affected sensors');
+
+				this.disableSensorsFromBuffer('InfluxDB field type conflict');
+
 				await this.clearBuffer();
-			} else {
-				this.handleFlushFailure();
 			}
 
 			this.handleFlushFailure();
