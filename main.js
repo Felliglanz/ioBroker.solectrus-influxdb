@@ -19,6 +19,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		/* ---------- Influx ---------- */
 		this.influx = null;
 		this.writeApi = null;
+		this.influxVerified = false;
 
 		/* ---------- Runtime ---------- */
 		this.cache = {};
@@ -51,7 +52,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 	}
 
 	isInfluxReady() {
-		return !!this.writeApi && !this.isUnloading;
+		return !!this.writeApi && this.influxVerified && !this.isUnloading;
 	}
 
 	getCollectInterval() {
@@ -197,15 +198,29 @@ class SolectrusInfluxdb extends utils.Adapter {
 	 * INFLUX
 	 * ===================================================== */
 
-	async prepareInflux() {
-		if (this.isInfluxReady()) {
-			return;
+	async verifyInfluxConnection() {
+		try {
+			const { url, token, org, bucket } = this.config.influx;
+
+			this.influx = new InfluxDB({ url, token });
+			this.writeApi = this.influx.getWriteApi(org, bucket, 'ms');
+
+			const testPoint = new Point('adapter_connection_test').booleanField('ok', true).timestamp(new Date());
+
+			this.writeApi.writePoint(testPoint);
+			await this.writeApi.flush();
+
+			this.influxVerified = true;
+			this.setState('info.connection', true, true);
+			this.log.info('InfluxDB connection verified');
+			return true;
+		} catch (err) {
+			this.log.error(`Influx verification failed: ${err.message}`);
+			this.influxVerified = false;
+			await this.closeWriteApi();
+			this.setState('info.connection', false, true);
+			return false;
 		}
-
-		const { url, token, org, bucket } = this.config.influx;
-
-		this.influx = new InfluxDB({ url, token });
-		this.writeApi = this.influx.getWriteApi(org, bucket, 'ms');
 	}
 
 	async closeWriteApi() {
@@ -227,14 +242,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		if (this.isInfluxReady()) {
 			return true;
 		}
-
-		try {
-			await this.prepareInflux();
-			return true;
-		} catch (err) {
-			this.log.warn(`Influx not reachable: ${err.message}`);
-			return false;
-		}
+		return await this.verifyInfluxConnection();
 	}
 
 	/* =====================================================
