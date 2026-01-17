@@ -55,6 +55,13 @@ class SolectrusInfluxdb extends utils.Adapter {
 		return !!this.writeApi && this.influxVerified && !this.isUnloading;
 	}
 
+	isFieldTypeConflict(err) {
+		if (!err || !err.message) {
+			return false;
+		}
+		return err.message.toLowerCase().includes('field type conflict');
+	}
+
 	getCollectInterval() {
 		return Number(this.config.influx?.interval) > 0 ? Number(this.config.influx.interval) * 1000 : 5000;
 	}
@@ -215,7 +222,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 			this.log.info('InfluxDB connection verified');
 			return true;
 		} catch (err) {
-			this.log.error(`Influx verification failed: ${err.message}`);
+			this.log.warn(`Influx verification failed: ${err.message}`);
 			this.influxVerified = false;
 			await this.closeWriteApi();
 			this.setState('info.connection', false, true);
@@ -435,7 +442,13 @@ class SolectrusInfluxdb extends utils.Adapter {
 		} catch (err) {
 			this.log.warn(`Flush failed: ${err.message}`);
 			await this.closeWriteApi();
-			await this.clearBuffer();
+			const isTypeConflict = this.isFieldTypeConflict(err);
+
+			if (isTypeConflict) {
+				this.log.error('InfluxDB field type conflict detected – clearing buffer to prevent endless retry');
+				await this.clearBuffer();
+			}
+
 			this.handleFlushFailure();
 		}
 	}
