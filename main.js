@@ -110,6 +110,9 @@ class SolectrusInfluxdb extends utils.Adapter {
 			return;
 		}
 
+		if (!Array.isArray(this.config.sensors)) {
+			this.config.sensors = [];
+		}
 		await this.prepareSensors();
 
 		/* Collect loop */
@@ -214,20 +217,71 @@ class SolectrusInfluxdb extends utils.Adapter {
 
 	async prepareSensors() {
 		for (const sensor of this.config.sensors) {
-			if (!sensor.enabled || !sensor.sourceState) {
+			if (!sensor.enabled) {
 				continue;
 			}
 
 			const id = this.getSensorStateId(sensor);
-			this.sourceToSensorId[sensor.sourceState] = id;
+			const typeMapping = {
+				int: 'number',
+				float: 'number',
+				bool: 'boolean',
+				string: 'string',
+			};
 
-			const state = await this.getForeignStateAsync(sensor.sourceState);
-			if (state) {
-				this.cache[id] = state.val;
-				this.setState(id, state.val, true);
+			// Use configured type
+			const iobType = typeMapping[sensor.type] || 'mixed';
+
+			const obj = await this.getObjectAsync(id);
+
+			/** @type {ioBroker.SettableStateObject} */
+			const newObj = {
+				type: 'state',
+				common: {
+					name: sensor.SensorName,
+					type: iobType,
+					role: 'value',
+					read: true,
+					write: false,
+				},
+				native: {
+					sourceState: sensor.sourceState,
+				},
+			};
+
+			if (!obj) {
+				this.setObject(id, newObj);
+			} else {
+				this.extendObject(id, newObj);
 			}
 
-			this.subscribeForeignStates(sensor.sourceState);
+			if (!sensor.sourceState) {
+				continue;
+			}
+
+			const foreignObj = await this.getForeignObjectAsync(sensor.sourceState);
+			if (!foreignObj) {
+				this.log.warn(`Source state not found: ${sensor.sourceState}`);
+				continue;
+			}
+
+			this.sourceToSensorId[sensor.sourceState] = id;
+
+			if (sensor.sourceState) {
+				const obj = await this.getForeignObjectAsync(sensor.sourceState);
+				if (!obj) {
+					this.log.warn(`Source state not found: ${sensor.sourceState}`);
+					continue;
+				}
+
+				const state = await this.getForeignStateAsync(sensor.sourceState);
+				if (state) {
+					this.cache[id] = state.val;
+					this.setState(id, state.val, true);
+				}
+
+				this.subscribeForeignStates(sensor.sourceState);
+			}
 		}
 	}
 
