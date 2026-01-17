@@ -37,6 +37,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 
 		/* ---------- Persistence ---------- */
 		this.bufferFile = path.join(this.adapterDir, 'buffer.json');
+		this.maxBufferSize = 100_000;
 
 		this.on('ready', this.onReady.bind(this));
 		this.on('unload', this.onUnload.bind(this));
@@ -373,6 +374,11 @@ class SolectrusInfluxdb extends utils.Adapter {
 				value,
 				ts: now,
 			});
+
+			if (this.buffer.length > this.maxBufferSize) {
+				this.log.error('Buffer limit reached – dropping oldest entries');
+				this.buffer.splice(0, this.buffer.length - this.maxBufferSize);
+			}
 		}
 
 		this.saveBuffer();
@@ -442,11 +448,11 @@ class SolectrusInfluxdb extends utils.Adapter {
 		} catch (err) {
 			this.log.warn(`Flush failed: ${err.message}`);
 			await this.closeWriteApi();
-			const isTypeConflict = this.isFieldTypeConflict(err);
 
-			if (isTypeConflict) {
-				this.log.warn('InfluxDB field type conflict detected – clearing buffer to prevent endless retry');
+			if (this.isFieldTypeConflict(err)) {
 				await this.clearBuffer();
+			} else {
+				this.handleFlushFailure();
 			}
 
 			this.handleFlushFailure();
