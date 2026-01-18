@@ -57,18 +57,6 @@
 					"md": 6,
 					"lg": 4,
 					"xl": 4
-        },
-        "influx.flushInterval": {
-          "type": "number",
-          "label": "Flush interval (s)",
-          "min": 10,
-          "max": 60,
-          "newLine": true,
-					"xs": 12,
-					"sm": 12,
-					"md": 6,
-					"lg": 4,
-					"xl": 4
         }
       }
     },

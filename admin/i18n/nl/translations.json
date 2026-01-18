@@ -29,7 +29,6 @@
   "CUSTOM_POWER_20": "CUSTOM_POWER_20",
   "Datatype": "Gegevenstype",
   "Float": "Vlot",
-  "Flush Interval (s)": "Spoelinterval(s)",
   "GRID_EXPORT_LIMIT": "GRID_EXPORT_LIMIT",
   "GRID_EXPORT_POWER": "GRID_EXPORT_POWER",
   "GRID_IMPORT_POWER": "GRID_IMPORT_POWER",

@@ -138,8 +138,7 @@
       "org": "solectrus",
       "bucket": "solectrus",
       "token": "",
-      "interval": 5,
-      "flushInterval": 60
+      "interval": 5
     },
     "sensors": [
       {

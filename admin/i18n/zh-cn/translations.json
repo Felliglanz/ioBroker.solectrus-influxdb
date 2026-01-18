@@ -29,7 +29,6 @@
   "CUSTOM_POWER_20": "定制_电源_20",
   "Datatype": "数据类型",
   "Float": "漂浮",
-  "Flush Interval (s)": "冲洗间隔（秒）",
   "GRID_EXPORT_LIMIT": "GRID_EXPORT_LIMIT",
   "GRID_EXPORT_POWER": "GRID_EXPORT_POWER",
   "GRID_IMPORT_POWER": "GRID_IMPORT_POWER",

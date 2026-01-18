@@ -66,6 +66,13 @@ class SolectrusInfluxdb extends utils.Adapter {
 		};
 	}
 
+	isFieldTypeConflict(err) {
+		if (!err || !err.message) {
+			return false;
+		}
+		return err.message.toLowerCase().includes('field type conflict');
+	}
+
 	getSensorStateId(sensor) {
 		return `sensors.${sensor.SensorName.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
 	}
@@ -74,19 +81,12 @@ class SolectrusInfluxdb extends utils.Adapter {
 		return !!this.writeApi && this.influxVerified && !this.isUnloading;
 	}
 
-	isFieldTypeConflict(err) {
-		if (!err || !err.message) {
-			return false;
-		}
-		return err.message.toLowerCase().includes('field type conflict');
-	}
-
 	getCollectInterval() {
 		return Number(this.config.influx?.interval) > 0 ? Number(this.config.influx.interval) * 1000 : 5000;
 	}
 
 	getFlushInterval() {
-		return Number(this.config.influx?.flushInterval) > 0 ? Number(this.config.influx.flushInterval) * 1000 : 10_000;
+		return Number(this.config.influx?.interval) > 0 ? (Number(this.config.influx.interval) + 5) * 1000 : 10_000;
 	}
 
 	/* =====================================================
@@ -228,11 +228,6 @@ class SolectrusInfluxdb extends utils.Adapter {
 		});
 	}
 
-	validateInfluxConfig() {
-		const cfg = this.config.influx;
-		return cfg && cfg.url?.trim() && cfg.token?.trim() && cfg.org?.trim() && cfg.bucket?.trim();
-	}
-
 	/* =====================================================
 	 * INFLUX
 	 * ===================================================== */
@@ -275,6 +270,11 @@ class SolectrusInfluxdb extends utils.Adapter {
 			this.writeApi = null;
 			this.influx = null;
 		}
+	}
+
+	validateInfluxConfig() {
+		const cfg = this.config.influx;
+		return cfg && cfg.url?.trim() && cfg.token?.trim() && cfg.org?.trim() && cfg.bucket?.trim();
 	}
 
 	async ensureInflux() {
@@ -375,10 +375,14 @@ class SolectrusInfluxdb extends utils.Adapter {
 
 		sensor.enabled = false;
 
-		const msg = `Sensor "${sensor.SensorName}" wurde deaktiviert wegen Field-Type-Conflict (Messung: ${measurement}, Feld: ${field})`;
+		const msg = `Sensor "${sensor.SensorName}" was deactivated because of Field-Type-Conflict (Messung: ${measurement}, Feld: ${field})`;
 		this.log.error(msg);
 		this.setState('info.lastError', msg, true);
 	}
+
+	/* =====================================================
+	 * STATE CHANGE
+	 * ===================================================== */
 
 	onStateChange(id, state) {
 		if (!state || this.isUnloading) {

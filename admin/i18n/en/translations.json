@@ -5,7 +5,6 @@
   "Bucket": "Bucket",
   "Token": "Token",
   "Polling Interval (s)": "Polling interval (s)",
-  "Flush Interval (s)": "Flush interval (s)",
 
   "SOLECTRUS Sensors": "SOLECTRUS sensors",
   "Active": "Enabled",
