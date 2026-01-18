@@ -7,6 +7,7 @@
     'use strict';
 
     const REMOTE_NAME = 'SolectrusSensors';
+    const UI_VERSION = '2026-01-18 20260118-1';
     let shareScope;
 
     if (typeof console !== 'undefined' && typeof console.debug === 'function') {
@@ -86,7 +87,38 @@
             const dataIsArray = Array.isArray(props && props.data);
             const dataIsObject = !!(props && props.data && typeof props.data === 'object' && !dataIsArray);
 
-            const isDark = (props && props.themeType === 'dark') || (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            const getThemeType = () => {
+                if (props && typeof props.themeType === 'string' && props.themeType) {
+                    return props.themeType;
+                }
+                const mode = props && props.theme && props.theme.palette && props.theme.palette.mode;
+                if (mode === 'dark' || mode === 'light') {
+                    return mode;
+                }
+                try {
+                    const doc = globalThis.document;
+                    const htmlTheme = doc && doc.documentElement ? doc.documentElement.getAttribute('data-theme') : '';
+                    if (htmlTheme === 'dark' || htmlTheme === 'light') {
+                        return htmlTheme;
+                    }
+                    const body = doc ? doc.body : null;
+                    if (body && body.classList) {
+                        if (body.classList.contains('mui-theme-dark') || body.classList.contains('iob-theme-dark')) {
+                            return 'dark';
+                        }
+                        if (body.classList.contains('mui-theme-light') || body.classList.contains('iob-theme-light')) {
+                            return 'light';
+                        }
+                    }
+                } catch {
+                    // ignore
+                }
+                return '';
+            };
+
+            const themeType = getThemeType();
+            const win = globalThis.window || globalThis;
+            const isDark = themeType === 'dark' || (!!(win && win.matchMedia) && win.matchMedia('(prefers-color-scheme: dark)').matches);
             const colors = isDark
                 ? {
                       panelBg: '#1f1f1f',
@@ -111,6 +143,9 @@
 
             const DialogSelectID = AdapterReact && (AdapterReact.DialogSelectID || AdapterReact.SelectID);
 
+            const socket = (props && props.socket) || globalThis.socket || globalThis._socket || null;
+            const theme = (props && props.theme) || null;
+
             // Admin versions differ:
             // - Some pass `props.data` as the full native object (then `attr` selects the field).
             // - Some pass `props.data` directly as the field value (sensors array).
@@ -133,6 +168,7 @@
                         ? Object.keys(props.data)
                         : [];
                     console.info('[SolectrusSensorsEditor] mounted', {
+                        version: UI_VERSION,
                         attr,
                         propsAttr: props && props.attr,
                         dataType: Array.isArray(props && props.data) ? 'array' : typeof (props && props.data),
@@ -141,6 +177,12 @@
                         hasForceUpdate: !!(props && typeof props.forceUpdate === 'function'),
                         onChangeType: typeof (props && props.onChange),
                         onChangeLength: props && typeof props.onChange === 'function' ? props.onChange.length : undefined,
+                        themeType: props && props.themeType,
+                        derivedThemeType: themeType,
+                        hasTheme: !!(props && props.theme),
+                        hasSocket: !!(props && props.socket),
+                        hasGlobalSocket: !!(globalThis.socket || globalThis._socket),
+                        hasDialogSelectId: !!DialogSelectID,
                     });
                 }
             }, []);
@@ -308,6 +350,7 @@
                 width: '100%',
                 minHeight: 360,
                 color: colors.text,
+                position: 'relative',
             };
 
             const leftStyle = {
@@ -384,6 +427,21 @@
             return React.createElement(
                 'div',
                 { style: rootStyle },
+                React.createElement(
+                    'div',
+                    {
+                        style: {
+                            position: 'absolute',
+                            right: 14,
+                            marginTop: -22,
+                            fontSize: 11,
+                            opacity: 0.7,
+                            color: colors.textMuted,
+                            pointerEvents: 'none',
+                        },
+                    },
+                    `Sensors UI ${UI_VERSION}`
+                ),
                 React.createElement(
                     'div',
                     { style: leftStyle },
@@ -494,12 +552,26 @@
                                       {
                                           type: 'button',
                                           style: Object.assign({}, btnStyle, { padding: '8px 10px' }),
-                                          disabled: !(DialogSelectID && props && props.socket && props.theme),
-                                          title: DialogSelectID && props && props.socket && props.theme
+                                          disabled: !(DialogSelectID && socket && theme),
+                                          title: DialogSelectID && socket && theme
                                               ? 'Select from existing states'
-                                              : 'Select dialog not available (missing socket/theme)'
+                                              : 'Select dialog not available (missing socket/theme or adapter-react-v5)'
                                           ,
-                                          onClick: () => setShowSelectStateId(true),
+                                          onClick: () => {
+                                              if (!(DialogSelectID && socket && theme)) {
+                                                  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                                                      console.warn('[SolectrusSensorsEditor] SelectID not available', {
+                                                          version: UI_VERSION,
+                                                          hasDialogSelectId: !!DialogSelectID,
+                                                          hasSocket: !!socket,
+                                                          hasTheme: !!theme,
+                                                          propsThemeType: props && props.themeType,
+                                                          derivedThemeType: themeType,
+                                                      });
+                                                  }
+                                              }
+                                              setShowSelectStateId(true);
+                                          },
                                       },
                                       'Select'
                                   )
@@ -544,14 +616,14 @@
                                   value: selectedSensor.field || '',
                                   onChange: e => updateSelected('field', e.target.value),
                               }),
-                              showSelectStateId && DialogSelectID && props && props.socket && props.theme
+                              showSelectStateId && DialogSelectID && socket && theme
                                   ? React.createElement(DialogSelectID, {
                                         key: 'selectStateId',
                                         imagePrefix: '../..',
                                         dialogName: (props && (props.adapterName || props.adapter)) || 'solectrus-influxdb',
-                                        themeType: props && props.themeType,
-                                        theme: props && props.theme,
-                                        socket: props && props.socket,
+                                        themeType: themeType || (props && props.themeType),
+                                        theme: theme,
+                                        socket: socket,
                                         types: 'state',
                                         selected: selectedSensor.sourceState || '',
                                         onClose: () => setShowSelectStateId(false),
