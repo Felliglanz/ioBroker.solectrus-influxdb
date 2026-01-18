@@ -200,14 +200,7 @@
 
                 if (props && props.custom) {
                     // In "custom object" mode JsonConfig expects: onChange(attr, value, cb?, saveConfig?)
-                    callOnChange('custom-object attr/value', attr, nextSensors, cb, false);
-                    return;
-                }
-
-                // Some Admin/JsonConfig variants still expect the dispatcher-style signature in custom components.
-                // Prefer (attr, value, cb, saveConfig) when available.
-                if (typeof attr === 'string' && attr && typeof onChange === 'function' && onChange.length >= 2) {
-                    callOnChange('adapter-config attr/value', attr, nextSensors, cb, false);
+                    callOnChange('custom-object attr/value', attr, nextSensors);
                     return;
                 }
 
@@ -222,7 +215,11 @@
                             hasSensors: !!(nextData && nextData.sensors),
                         });
                     }
-                    callOnChange('adapter-config full-data', nextData, undefined, cb, false);
+                    // IMPORTANT: In adapter config mode, pass only the full data object.
+                    // Passing (attr, value) can be misinterpreted by some Admin builds and lead to setValue
+                    // attempting to write into a string (e.g. "Cannot create property 'sensors' on string 'sensors'").
+                    callOnChange('adapter-config full-data', nextData);
+                    cb();
                     return;
                 }
 
