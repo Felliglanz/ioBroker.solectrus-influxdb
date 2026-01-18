@@ -48,21 +48,9 @@
         },
         "influx.interval": {
           "type": "number",
-          "label": "Polling interval (s)",
+          "label": "Polling Interval (s)",
           "min": 5,
           "max": 30,
-          "newLine": true,
-					"xs": 12,
-					"sm": 12,
-					"md": 6,
-					"lg": 4,
-					"xl": 4
-        },
-        "influx.flushInterval": {
-          "type": "number",
-          "label": "Flush interval (s)",
-          "min": 30,
-          "max": 300,
           "newLine": true,
 					"xs": 12,
 					"sm": 12,

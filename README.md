@@ -35,57 +35,122 @@ Typical use cases:
 
 ---
 
-### Features
-- Dynamic sensor configuration via Admin UI (jsonConfig)
-- Supports `int`, `float`, `bool`, `string`
-- Live updates via `stateChange`
-- Periodic bulk writes to InfluxDB
-- Connection health state (`info.connection`)
-- Safe adapter lifecycle handling (start/stop/restart)
-- Supports up to **20 custom user-defined sensors**
+## ✨ Features
+
+- ✅ Writing ioBroker states to InfluxDB
+- ✅ Freely configurable sensors (measurement, field, type)
+- ✅ **Buffer** in case of Influx failures  
+- ✅ **Persistent buffer** (survives adapter restarts)
+- ✅ **Automatic reconnection** to InfluxDB
+- ✅ **Verification of URL / token / org / bucket**
+- ✅ **Manual emptying of the buffer** via button  
+- ✅ **Maximum buffer size** (fail-safe)
+- ✅ **Targeted deactivation of individual sensors in case of type conflicts**
+- ✅ Clean separation of collect and flush loops  
+- ✅ Production-ready (no data loss during short outages)  
 
 ---
 
-### Configuration
+## 🧠 How it works
 
-#### InfluxDB
-| Field | Description |
+The Adapter works with **two seperate Loops**:
+
+### 1️⃣ Collect loop
+- Runs every *X seconds* (default: 5 s)  
+- Reads the last known sensor values
+- Writes them **to a local buffer**
+- **No direct Influx access**
+
+### 2️⃣ Flush loop
+- Runs with a time delay (interval + 5 s)
+- Checks Influx connection (including test write)  
+- Writes all buffered points to InfluxDB  
+- Deletes the buffer **only if successful**
+
+➡ This means that **no measured values are lost**, even in the event of:
+- InfluxDB reboot  
+- Update / maintenance  
+- Network problems  
+- Adapter restart  
+
+---
+
+## 📦 Buffer & Persistence
+
+- Buffer is stored in `buffer.json`  
+- Located in the adapter directory  
+- Loaded automatically at startup  
+- Maximum size: **100,000 points**  
+- If exceeded, the **oldest entries are discarded**
+
+## # Manual emptying
+Via the state:
+
+```
+solectrus-influxdb.0.info.buffer.clear
+```
+
+(Button / Boolean)
+
+---
+
+## ⚙️ InfluxDB-Configuration
+
+Required fields:
+- **URL**
+- **Token**
+- **Organization**
+- **Bucket**
+
+The adapter actively checks the connection by performing a **test write** (`adapter_connection_test`).
+
+---
+
+## 📡 Sensor configuration
+
+Each sensor is configured in the UI with:
+- **SensorName**
+- **enabled**
+- **ioBroker source State**
+- **measurement**
+- **field**
+- **type** (`int`, `float`, `bool`, `string`)
+
+---
+
+## ⚠️ Field Type Conflict (InfluxDB)
+
+- Conflict is detected
+- **Only the affected sensor is disabled**
+- Other sensors continue to run
+- Buffer is emptied
+- Error is stored in `info.lastError`
+
+---
+
+## 🧾 Info States
+
+| State | Description |
 |-----|-------------|
-| URL | InfluxDB base URL |
-| Organization | InfluxDB org |
-| Bucket | Target bucket |
-| Token | API token |
-| Polling interval | Write interval in seconds |
-
-#### Sensors
-Each sensor consists of:
-- Enabled
-- Sensor Name
-- ioBroker source state
-- Datatype
-- Measurement
-- Field
-
-Only enabled sensors are processed.
+| `info.connection` | InfluxDB connected |
+| `info.buffer.size` | Number of buffered points |
+| `info.buffer.oldest` | Timestamp of oldest entry |
+| `info.buffer.clear` | Button: Clear buffer |
+| `info.lastError` | Last critical error |
 
 ---
 
-### Runtime Behavior
-1. Adapter starts
-2. InfluxDB connection is validated
-3. Sensor states are created or updated
-4. Foreign states are subscribed
-5. State changes update internal cache
-6. Cached values are written periodically to InfluxDB
+## 🔄 Retry strategy
+
+- Exponential backoff
+- Maximum: **5 minutes**
+- After success: Reset to normal interval
 
 ---
 
-### Developer Notes
-- Adapter uses **compact mode**
-- Uses `extendObject()` to update existing states
-- Uses internal cache to avoid unnecessary reads
-- Handles restart/unload cleanly
-- Written in plain JavaScript (no TypeScript runtime)
+## 🔄 Debugging
+
+- use Loglevel **Debug** for more Information 
 
 ---
 
@@ -112,57 +177,122 @@ Typische Einsatzbereiche:
 
 ---
 
-### Funktionen
-- Dynamische Sensorkonfiguration per Admin UI
-- Unterstützt `int`, `float`, `bool`, `string`
-- Live-Updates über `stateChange`
-- Zyklisches Schreiben nach InfluxDB
-- Verbindungsstatus (`info.connection`)
-- Sauberes Start-/Stop-/Restart-Verhalten
-- Unterstützung für **bis zu 20 benutzerdefinierte Sensoren**
+## ✨ Features
+
+- ✅ Schreiben von ioBroker-Zuständen nach InfluxDB  
+- ✅ Frei konfigurierbare Sensoren (Messung, Feld, Typ)  
+- ✅ **Zwischenspeicher (Buffer)** bei Influx-Ausfällen  
+- ✅ **Persistenter Buffer** (überlebt Adapter-Neustarts)  
+- ✅ **Automatischer Reconnect** zur InfluxDB  
+- ✅ **Verifikation von URL / Token / Org / Bucket**  
+- ✅ **Manuelles Leeren des Buffers** über Button  
+- ✅ **Maximale Buffergröße** (Fail-Safe)  
+- ✅ **Gezieltes Deaktivieren einzelner Sensoren bei Typkonflikten**  
+- ✅ Saubere Trennung von Collect- und Flush-Loop  
+- ✅ Produktionsreif (keine Datenverluste bei kurzen Ausfällen)  
 
 ---
 
-### Konfiguration
+## 🧠 Funktionsprinzip
 
-#### InfluxDB
-| Feld | Beschreibung |
-|-----|--------------|
-| URL | InfluxDB Basis-URL |
-| Organization | InfluxDB Organisation |
-| Bucket | Ziel-Bucket |
-| Token | API-Token |
-| Polling-Intervall | Schreibintervall in Sekunden |
+Der Adapter arbeitet mit **zwei getrennten Loops**:
 
-#### Sensoren
-Ein Sensor besteht aus:
-- Aktiviert
-- Sensorname
-- ioBroker-Quell-State
-- Datentyp
-- Measurement
-- Field
+### 1️⃣ Collect-Loop
+- Läuft alle *X Sekunden* (Standard: 5 s)  
+- Liest die letzten bekannten Sensorwerte  
+- Schreibt sie **in einen lokalen Buffer**  
+- **Kein direkter Influx-Zugriff**
 
-Nur aktivierte Sensoren werden verarbeitet.
+### 2️⃣ Flush-Loop
+- Läuft zeitversetzt (Intervall + 5 s)  
+- Prüft Influx-Verbindung (inkl. Testschreiben)  
+- Schreibt alle gepufferten Punkte nach InfluxDB  
+- Löscht den Buffer **nur bei Erfolg**
 
----
-
-### Laufzeitverhalten
-1. Adapter startet
-2. InfluxDB-Verbindung wird geprüft
-3. Sensor-Datenpunkte werden angelegt oder aktualisiert
-4. Fremde States werden abonniert
-5. Änderungen aktualisieren den internen Cache
-6. Cache wird zyklisch nach InfluxDB geschrieben
+➡ Dadurch gehen **keine Messwerte verloren**, auch bei:
+- InfluxDB-Reboot  
+- Update / Wartung  
+- Netzwerkproblemen  
+- Adapter-Neustart  
 
 ---
 
-### Entwicklerhinweise
-- Adapter nutzt **Compact Mode**
-- `extendObject()` aktualisiert bestehende States
-- Interner Cache reduziert Zugriffe
-- Sauberes Unload-Handling
-- Reines JavaScript (kein TypeScript zur Laufzeit)
+## 📦 Buffer & Persistenz
+
+- Buffer wird in `buffer.json` gespeichert  
+- Liegt im Adapter-Verzeichnis  
+- Wird beim Start automatisch geladen  
+- Maximale Größe: **100.000 Punkte**  
+- Bei Überschreitung werden die **ältesten Einträge verworfen**
+
+### Manuelles Leeren
+Über den State:
+
+```
+solectrus-influxdb.0.info.buffer.clear
+```
+
+(Button / Boolean)
+
+---
+
+## ⚙️ InfluxDB-Konfiguration
+
+Pflichtfelder:
+- **URL**
+- **Token**
+- **Organisation**
+- **Bucket**
+
+Der Adapter prüft die Verbindung aktiv durch ein **Testschreiben** (`adapter_connection_test`).
+
+---
+
+## 📡 Sensor-Konfiguration
+
+Jeder Sensor wird in der UI konfiguriert mit:
+- **SensorName**
+- **Aktiviert**
+- **ioBroker Quellstatus**
+- **Influx Tabelle**
+- **Influx Feld**
+- **Datentyp** (`int`, `float`, `bool`, `string`)
+
+---
+
+## ⚠️ Field-Type-Conflict (InfluxDB)
+
+- Konflikt wird erkannt
+- **Nur der betroffene Sensor wird deaktiviert**
+- Andere Sensoren laufen weiter
+- Buffer wird geleert
+- Fehler wird gespeichert in `info.lastError`
+
+---
+
+## 🧾 Info-States
+
+| State | Beschreibung |
+|-----|-------------|
+| `info.connection` | InfluxDB verbunden |
+| `info.buffer.size` | Anzahl gepufferter Punkte |
+| `info.buffer.oldest` | Zeitstempel des ältesten Eintrags |
+| `info.buffer.clear` | Button: Buffer löschen |
+| `info.lastError` | Letzter kritischer Fehler |
+
+---
+
+## 🔄 Retry-Strategie
+
+- Exponentielles Backoff
+- Maximal: **5 Minuten**
+- Nach Erfolg: Reset auf Normalintervall
+
+---
+
+## 🔄 Debugging
+
+- Benutze Loglevel **Debug** für mehr Information 
 
 ---
 
@@ -178,6 +308,14 @@ Nur aktivierte Sensoren werden verarbeitet.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.2.0 (2026-01-18)
+
+* (patricknitsch) Refactoring code and improve readability
+* (patricknitsch) Buffer values and send to Influx if Influx is online
+* (patricknitsch) Save max. 100000 values and send all to Influx if Influx is online again
+* (patricknitsch) Split Data Collecting and Influx writing
+* (patricknitsch) Updated Translations
+
 ### 0.1.5 (2026-01-17)
 
 * (Felliglanz) Improve sensor configuration UI (accordion)
