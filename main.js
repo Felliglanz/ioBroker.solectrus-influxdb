@@ -155,6 +155,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		if (!Array.isArray(this.config.sensors)) {
 			this.config.sensors = [];
 		}
+		await this.ensureSensorTitlesInInstanceConfig();
 		await this.prepareSensors();
 
 		/* Collect loop */
@@ -164,6 +165,36 @@ class SolectrusInfluxdb extends utils.Adapter {
 		this.scheduleNextFlush(1000);
 
 		this.log.info('Adapter started successfully');
+	}
+
+	async ensureSensorTitlesInInstanceConfig() {
+		try {
+			const objId = `system.adapter.${this.namespace}`;
+			const obj = await this.getForeignObjectAsync(objId);
+			if (!obj || !obj.native || !Array.isArray(obj.native.sensors)) {
+				return;
+			}
+
+			let changed = false;
+			obj.native.sensors.forEach(sensor => {
+				if (!sensor || typeof sensor !== 'object') {
+					return;
+				}
+				const sensorName = sensor.SensorName || 'Sensor';
+				const expectedTitle = `${sensor.enabled ? '🟢 ' : '⚪ '}${sensorName}`;
+				if (sensor._title !== expectedTitle) {
+					sensor._title = expectedTitle;
+					changed = true;
+				}
+			});
+
+			if (changed) {
+				await this.setForeignObjectAsync(objId, obj);
+			}
+		} catch (e) {
+			// Not critical for adapter runtime; it only affects nicer admin display.
+			this.log.debug(`Cannot migrate sensor titles: ${e}`);
+		}
 	}
 
 	async createInfoStates() {

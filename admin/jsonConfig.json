@@ -79,12 +79,8 @@
               "attr": "_title",
               "type": "text",
               "readOnly": true,
-              "doNotSave": true,
               "style": { "display": "none" },
-              "defaultFunc": {
-                "alsoDependsOn": ["enabled", "SensorName"],
-                "func": "(data.enabled ? '🟢 ' : '⚪ ') + (data.SensorName || 'Sensor')"
-              },
+              "default": "⚪ Sensor",
               "onChange": {
                 "alsoDependsOn": ["enabled", "SensorName"],
                 "calculateFunc": "(data.enabled ? '🟢 ' : '⚪ ') + (data.SensorName || 'Sensor')",
@@ -159,6 +155,7 @@
           ],
           "default": [
 						{
+              "_title": "⚪ INVERTER_POWER",
 							"enabled": false,
 							"SensorName": "INVERTER_POWER",
 							"sourceState": "",
@@ -167,6 +164,7 @@
 							"field": "power"
 						},
 						{
+              "_title": "⚪ INVERTER_POWER_1",
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_1",
 							"sourceState": "",
@@ -175,6 +173,7 @@
 							"field": "power"
 						},
 						{
+              "_title": "⚪ INVERTER_POWER_2",
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_2",
 							"sourceState": "",
@@ -183,6 +182,7 @@
 							"field": "power"
 						},
 						{
+              "_title": "⚪ INVERTER_POWER_3",
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_3",
 							"sourceState": "",
@@ -191,6 +191,7 @@
 							"field": "power"
 						},
 						{
+              "_title": "⚪ INVERTER_POWER_4",
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_4",
 							"sourceState": "",
@@ -199,6 +200,7 @@
 							"field": "power"
 						},
 						{
+              "_title": "⚪ INVERTER_POWER_5",
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_5",
 							"sourceState": "",
@@ -207,6 +209,7 @@
 							"field": "power"
 						},
 						{
+              "_title": "⚪ GRID_IMPORT_POWER",
 							"enabled": false,
 							"SensorName": "GRID_IMPORT_POWER",
 							"sourceState": "",
@@ -215,6 +218,7 @@
 							"field": "import_power"
 						},
 						{
+              "_title": "⚪ GRID_EXPORT_POWER",
 							"enabled": false,
 							"SensorName": "GRID_EXPORT_POWER",
 							"sourceState": "",
@@ -223,6 +227,7 @@
 							"field": "export_power"
 						},
 						{
+              "_title": "⚪ GRID_EXPORT_LIMIT",
 							"enabled": false,
 							"SensorName": "GRID_EXPORT_LIMIT",
 							"sourceState": "",
@@ -231,6 +236,7 @@
 							"field": "export_limit"
 						},
 						{
+              "_title": "⚪ CASE_TEMP",
 							"enabled": false,
 							"SensorName": "CASE_TEMP",
 							"sourceState": "",
@@ -239,6 +245,7 @@
 							"field": "temperature"
 						},
 						{
+              "_title": "⚪ SYSTEM_STATUS",
 							"enabled": false,
 							"SensorName": "SYSTEM_STATUS",
 							"sourceState": "",
@@ -247,6 +254,7 @@
 							"field": "status"
 						},
 						{
+							"_title": "⚪ SYSTEM_STATUS_OK",
 							"enabled": false,
 							"SensorName": "SYSTEM_STATUS_OK",
 							"sourceState": "",
@@ -255,6 +263,7 @@
 							"field": "status_ok"
 						},            
 						{
+							"_title": "⚪ BATTERY_SOC",
 							"enabled": false,
 							"SensorName": "BATTERY_SOC",
 							"sourceState": "",
@@ -263,6 +272,7 @@
 							"field": "soc"
 						},
 						{
+							"_title": "⚪ BATTERY_CHARGING_POWER",
 							"enabled": false,
 							"SensorName": "BATTERY_CHARGING_POWER",
 							"sourceState": "",
@@ -271,6 +281,7 @@
 							"field": "charging_power"
 						},
 						{
+							"_title": "⚪ BATTERY_DISCHARGING_POWER",
 							"enabled": false,
 							"SensorName": "BATTERY_DISCHARGING_POWER",
 							"sourceState": "",
@@ -279,6 +290,7 @@
 							"field": "discharging_power"
 						},
 						{
+							"_title": "⚪ HOUSE_POWER",
 							"enabled": false,
 							"SensorName": "HOUSE_POWER",
 							"sourceState": "",
@@ -287,6 +299,7 @@
 							"field": "power"
 						},
 						{
+							"_title": "⚪ HEATPUMP_POWER",
 							"enabled": false,
 							"SensorName": "HEATPUMP_POWER",
 							"sourceState": "",
@@ -295,6 +308,7 @@
 							"field": "power"
 						},
             {
+              "_title": "⚪ CUSTOM_POWER_01",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_01",
               "sourceState": "",
@@ -303,6 +317,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_02",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_02",
               "sourceState": "",
@@ -311,6 +326,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_03",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_03",
               "sourceState": "",
@@ -319,6 +335,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_04",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_04",
               "sourceState": "",
@@ -327,6 +344,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_05",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_05",
               "sourceState": "",
@@ -335,6 +353,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_06",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_06",
               "sourceState": "",
@@ -343,6 +362,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_07",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_07",
               "sourceState": "",
@@ -351,6 +371,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_08",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_08",
               "sourceState": "",
@@ -359,6 +380,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_09",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_09",
               "sourceState": "",
@@ -367,6 +389,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_10",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_10",
               "sourceState": "",
@@ -375,6 +398,7 @@
               "field": "power"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_11",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_11",
               "sourceState": "",
@@ -383,6 +407,7 @@
               "field": "value"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_12",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_12",
               "sourceState": "",
@@ -391,6 +416,7 @@
               "field": "value"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_13",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_13",
               "sourceState": "",
@@ -399,6 +425,7 @@
               "field": "value"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_14",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_14",
               "sourceState": "",
@@ -407,6 +434,7 @@
               "field": "value"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_15",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_15",
               "sourceState": "",
@@ -415,6 +443,7 @@
               "field": "value"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_16",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_16",
               "sourceState": "",
@@ -423,6 +452,7 @@
               "field": "value"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_17",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_17",
               "sourceState": "",
@@ -431,6 +461,7 @@
               "field": "value"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_18",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_18",
               "sourceState": "",
@@ -439,6 +470,7 @@
               "field": "value"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_19",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_19",
               "sourceState": "",
@@ -447,6 +479,7 @@
               "field": "value"
             },
             {
+              "_title": "⚪ CUSTOM_POWER_20",
               "enabled": false,
               "SensorName": "CUSTOM_POWER_20",
               "sourceState": "",
@@ -455,6 +488,7 @@
               "field": "value"
             },
 						{
+							"_title": "⚪ WALLBOX_POWER",
 							"enabled": false,
 							"SensorName": "WALLBOX_POWER",
 							"sourceState": "",
@@ -463,6 +497,7 @@
 							"field": "power"
 						},
 						{
+							"_title": "⚪ WALLBOX_CAR_CONNECTED",
 							"enabled": false,
 							"SensorName": "WALLBOX_CAR_CONNECTED",
 							"sourceState": "",
@@ -471,6 +506,7 @@
 							"field": "connected"
 						},
 						{
+							"_title": "⚪ CAR_BATTERY_SOC",
 							"enabled": false,
 							"SensorName": "CAR_BATTERY_SOC",
 							"sourceState": "",
@@ -479,6 +515,7 @@
 							"field": "battery_soc"
 						},
 						{
+							"_title": "⚪ HEATPUMP_HEATING_POWER",
 							"enabled": false,
 							"SensorName": "HEATPUMP_HEATING_POWER",
 							"sourceState": "",
@@ -487,6 +524,7 @@
 							"field": "heating_power"
 						},
 						{
+							"_title": "⚪ HEATPUMP_TANK_TEMP",
 							"enabled": false,
 							"SensorName": "HEATPUMP_TANK_TEMP",
 							"sourceState": "",
@@ -495,6 +533,7 @@
 							"field": "tank_temp"
 						},
 						{
+							"_title": "⚪ HEATPUMP_STATUS",
 							"enabled": false,
 							"SensorName": "HEATPUMP_STATUS",
 							"sourceState": "",
@@ -503,6 +542,7 @@
 							"field": "status"
 						},
 						{
+							"_title": "⚪ OUTDOOR_TEMP",
 							"enabled": false,
 							"SensorName": "OUTDOOR_TEMP",
 							"sourceState": "",
@@ -511,6 +551,7 @@
 							"field": "temperature"
 						},
 						{
+							"_title": "⚪ INVERTER_POWER_FORECAST",
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_FORECAST",
 							"sourceState": "",
@@ -519,6 +560,7 @@
 							"field": "power"
 						},
 						{
+							"_title": "⚪ INVERTER_POWER_FORECAST_CLEARSKY",
 							"enabled": false,
 							"SensorName": "INVERTER_POWER_FORECAST_CLEARSKY",
 							"sourceState": "",
@@ -527,6 +569,7 @@
 							"field": "power"
 						},
 						{
+							"_title": "⚪ OUTDOOR_TEMP_FORECAST",
 							"enabled": false,
 							"SensorName": "OUTDOOR_TEMP_FORECAST",
 							"sourceState": "",
