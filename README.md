@@ -308,8 +308,7 @@ Jeder Sensor wird in der UI konfiguriert mit:
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.3.0 (2026-01-18)
 
 * (patricknitsch) Better handling of Influx Connection, also if no sensor is active
 * (Felliglanz) Rebuild of UI with actual status of each sensor
