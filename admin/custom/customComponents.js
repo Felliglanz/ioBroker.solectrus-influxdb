@@ -123,7 +123,6 @@
                 }
 
                 const onChange = props.onChange;
-                const hasDispatcherSignature = typeof onChange === 'function' && onChange.length >= 2;
 
                 // JsonConfig (modern Admin) passes:
                 // - props.data: the full data object (e.g., adapter native)
@@ -166,18 +165,13 @@
                 };
 
                 if (props && props.custom) {
+                    // In "custom object" mode JsonConfig expects: onChange(attr, value, cb?, saveConfig?)
                     onChange(attr, nextSensors);
                     return;
                 }
 
-                // Most modern Admin/JsonConfig builds expose a dispatcher: onChange(attr, value, cb?, saveConfig?)
-                // In that case we MUST call it with (attr, value), otherwise passing an object as first arg may
-                // be interpreted as an attribute/path and can overwrite/wipe the config.
-                if (hasDispatcherSignature && typeof attr === 'string' && attr) {
-                    onChange(attr, nextSensors);
-                    return;
-                }
-
+                // Adapter instance config mode (custom=false): JsonConfig expects full updated data object
+                // as first argument: onChange(updatedDataObject, val?, cb?, saveConfig?)
                 if (dataIsObject) {
                     const nextData = setByPath(props.data, attr, nextSensors);
                     onChange(nextData);
