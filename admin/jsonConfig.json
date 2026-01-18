@@ -78,11 +78,16 @@
             {
               "attr": "_title",
               "type": "text",
-              "hidden": "true",
               "readOnly": true,
+              "doNotSave": true,
+              "style": { "display": "none" },
+              "defaultFunc": {
+                "alsoDependsOn": ["enabled", "SensorName"],
+                "func": "(data.enabled ? '🟢 ' : '⚪ ') + (data.SensorName || 'Sensor')"
+              },
               "onChange": {
                 "alsoDependsOn": ["enabled", "SensorName"],
-                "calculateFunc": "(data.enabled ? '🟢 ' : '⚪ ') + (data.SensorName || '')",
+                "calculateFunc": "(data.enabled ? '🟢 ' : '⚪ ') + (data.SensorName || 'Sensor')",
                 "ignoreOwnChanges": true
               }
             },
