@@ -122,20 +122,58 @@
                     return;
                 }
 
-                // Prefer the safest calling convention based on the actual data shape:
-                // - value-only mode: onChange(nextValue)
-                // - object mode: onChange(attr, nextValue)
-                if (dataIsArray) {
-                    props.onChange(nextSensors);
-                    return;
-                }
+                // JsonConfig (modern Admin) passes:
+                // - props.data: the full data object (e.g., adapter native)
+                // - props.attr: the path/key for this control within `data`
+                // And expects changes as:
+                // - adapter-config mode: onChange(updatedDataObject, ...)
+                // - object-custom mode (`props.custom === true`): onChange(attr, value, ...)
+                const setByPath = (rootObj, path, value) => {
+                    if (!path) {
+                        return value;
+                    }
 
-                if (dataIsObject) {
+                    const parts = String(path).split('.').filter(Boolean);
+                    const clonedRoot = Array.isArray(rootObj)
+                        ? rootObj.slice()
+                        : Object.assign({}, rootObj || {});
+                    let cursor = clonedRoot;
+
+                    for (let i = 0; i < parts.length - 1; i++) {
+                        const part = parts[i];
+                        const isArrayIndex = Array.isArray(cursor) && /^\d+$/.test(part);
+                        const key = isArrayIndex ? parseInt(part, 10) : part;
+                        const existing = cursor[key];
+
+                        const next = Array.isArray(existing)
+                            ? existing.slice()
+                            : existing && typeof existing === 'object'
+                              ? Object.assign({}, existing)
+                              : {};
+
+                        cursor[key] = next;
+                        cursor = next;
+                    }
+
+                    const last = parts[parts.length - 1];
+                    const lastKey = Array.isArray(cursor) && /^\d+$/.test(last) ? parseInt(last, 10) : last;
+                    cursor[lastKey] = value;
+
+                    return clonedRoot;
+                };
+
+                if (props && props.custom) {
                     props.onChange(attr, nextSensors);
                     return;
                 }
 
-                // Fallback: try value-only first
+                if (dataIsObject) {
+                    const nextData = setByPath(props.data, attr, nextSensors);
+                    props.onChange(nextData);
+                    return;
+                }
+
+                // Legacy fallback: some environments may pass the field value directly.
                 props.onChange(nextSensors);
             };
 

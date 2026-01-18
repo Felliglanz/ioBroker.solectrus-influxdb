@@ -82,7 +82,6 @@
               "style": { "display": "none" },
               "default": "⚪ Sensor",
               "onChange": {
-                "alsoDependsOn": ["enabled", "SensorName"],
                 "calculateFunc": "(data.enabled ? '🟢 ' : '⚪ ') + (data.SensorName || 'Sensor')",
                 "ignoreOwnChanges": true
               }
@@ -92,7 +91,6 @@
               "label": "Enabled",
               "type": "checkbox",
               "onChange": {
-                "alsoDependsOn": ["SensorName"],
                 "calculateFunc": "data._title = (data.enabled ? '🟢 ' : '⚪ ') + (data.SensorName || 'Sensor'); return data.enabled;",
                 "ignoreOwnChanges": true
               },
@@ -106,7 +104,6 @@
               "label": "Sensor Name",
               "type": "text",
               "onChange": {
-                "alsoDependsOn": ["enabled"],
                 "calculateFunc": "data._title = (data.enabled ? '🟢 ' : '⚪ ') + (data.SensorName || 'Sensor'); return data.SensorName;",
                 "ignoreOwnChanges": true
               },
