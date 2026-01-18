@@ -141,7 +141,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		await this.createInfoStates();
 
 		this.setState('info.connection', false, true);
-		this.setState('ininfo.buffer.clear', false, true);
+		this.setState('info.buffer.clear', false, true);
 		this.setState('info.lastError', '', true);
 
 		this.loadBuffer();
