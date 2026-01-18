@@ -89,6 +89,10 @@ class SolectrusInfluxdb extends utils.Adapter {
 		return Number(this.config.influx?.interval) > 0 ? (Number(this.config.influx.interval) + 5) * 1000 : 10_000;
 	}
 
+	hasEnabledSensors() {
+		return Array.isArray(this.config.sensors) && this.config.sensors.some(s => s.enabled);
+	}
+
 	/* =====================================================
 	 * BUFFER (PERSISTENT)
 	 * ===================================================== */
@@ -152,9 +156,23 @@ class SolectrusInfluxdb extends utils.Adapter {
 			return;
 		}
 
+		/* --- Influx Verbindung IMMER prüfen --- */
+		const influxOk = await this.verifyInfluxConnection();
+		if (!influxOk) {
+			this.setState('info.lastError', 'InfluxDB connection failed – check URL, Token, Org and Bucket', true);
+			// Adapter läuft weiter → Retry erfolgt später beim Flush
+		}
+
 		if (!Array.isArray(this.config.sensors)) {
 			this.config.sensors = [];
 		}
+
+		if (!this.hasEnabledSensors()) {
+			const msg = 'No sensor is enabled. Please activate at least one sensor in the adapter configuration.';
+			this.log.warn(msg);
+			this.setState('info.lastError', msg, true);
+		}
+
 		await this.prepareSensors();
 
 		/* Collect loop */
@@ -282,6 +300,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		if (this.isInfluxReady()) {
 			return true;
 		}
+		this.log.debug('Verify Influx Connection...');
 		return await this.verifyInfluxConnection();
 	}
 
@@ -459,13 +478,30 @@ class SolectrusInfluxdb extends utils.Adapter {
 	}
 
 	async flushBuffer() {
-		if (this.isUnloading || this.buffer.length === 0) {
+		if (this.isUnloading) {
+			return;
+		}
+
+		/* --- No active sensors → write nothing --- */
+		if (!this.hasEnabledSensors()) {
+			this.log.debug('Flush skipped: no enabled sensors');
 			this.scheduleNextFlush(this.getFlushInterval());
 			return;
 		}
 
-		if (!(await this.ensureInflux())) {
+		/* --- Check Influx if Sensors active --- */
+		const influxReady = await this.ensureInflux();
+		if (!influxReady) {
+			this.log.warn('Influx not ready');
 			return this.handleFlushFailure();
+		}
+
+		/* --- Buffer empty → write nothing, Connection ok --- */
+		if (this.buffer.length === 0) {
+			this.flushFailures = 0;
+			this.setState('info.connection', true, true);
+			this.scheduleNextFlush(this.getFlushInterval());
+			return;
 		}
 
 		const writeApi = this.writeApi;
