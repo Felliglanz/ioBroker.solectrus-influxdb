@@ -122,6 +122,9 @@
                     return;
                 }
 
+                const onChange = props.onChange;
+                const hasDispatcherSignature = typeof onChange === 'function' && onChange.length >= 2;
+
                 // JsonConfig (modern Admin) passes:
                 // - props.data: the full data object (e.g., adapter native)
                 // - props.attr: the path/key for this control within `data`
@@ -163,18 +166,26 @@
                 };
 
                 if (props && props.custom) {
-                    props.onChange(attr, nextSensors);
+                    onChange(attr, nextSensors);
+                    return;
+                }
+
+                // Most modern Admin/JsonConfig builds expose a dispatcher: onChange(attr, value, cb?, saveConfig?)
+                // In that case we MUST call it with (attr, value), otherwise passing an object as first arg may
+                // be interpreted as an attribute/path and can overwrite/wipe the config.
+                if (hasDispatcherSignature && typeof attr === 'string' && attr) {
+                    onChange(attr, nextSensors);
                     return;
                 }
 
                 if (dataIsObject) {
                     const nextData = setByPath(props.data, attr, nextSensors);
-                    props.onChange(nextData);
+                    onChange(nextData);
                     return;
                 }
 
                 // Legacy fallback: some environments may pass the field value directly.
-                props.onChange(nextSensors);
+                onChange(nextSensors);
             };
 
             const selectedSensor = sensors[selectedIndex] || null;
