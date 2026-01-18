@@ -141,6 +141,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 		await this.createInfoStates();
 
 		this.setState('info.connection', false, true);
+		this.setState('ininfo.buffer.clear', false, true);
 		this.setState('info.lastError', '', true);
 
 		this.loadBuffer();
@@ -423,7 +424,7 @@ class SolectrusInfluxdb extends utils.Adapter {
 				continue;
 			}
 
-			this.log.debug(`Write point: ${id} : ${value} to: ${sensor.measurement} : ${sensor.field}`);
+			this.log.debug(`Collect point: ${id} : ${value} to: ${sensor.measurement} : ${sensor.field}`);
 			this.buffer.push({
 				id: sensor.SensorName,
 				measurement: sensor.measurement,
