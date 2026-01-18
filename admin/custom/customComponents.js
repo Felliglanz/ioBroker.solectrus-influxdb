@@ -8,9 +8,10 @@
 
     const REMOTE_NAME = 'SolectrusSensors';
     const UI_VERSION = '2026-01-18 20260118-1';
+    const DEBUG = false;
     let shareScope;
 
-    if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+    if (DEBUG && typeof console !== 'undefined' && typeof console.debug === 'function') {
         console.debug(`[${REMOTE_NAME}] custom remote loaded`);
     }
 
@@ -163,7 +164,7 @@
             }, [sensors.length, selectedIndex]);
 
             React.useEffect(() => {
-                if (typeof console !== 'undefined' && typeof console.info === 'function') {
+                if (DEBUG && typeof console !== 'undefined' && typeof console.info === 'function') {
                     const dataKeys = props && props.data && typeof props.data === 'object' && !Array.isArray(props.data)
                         ? Object.keys(props.data)
                         : [];
@@ -206,7 +207,7 @@
 
                 const callOnChange = (label, ...args) => {
                     try {
-                        if (typeof console !== 'undefined' && typeof console.info === 'function') {
+                        if (DEBUG && typeof console !== 'undefined' && typeof console.info === 'function') {
                             const dataKeys = dataIsObject ? Object.keys(props.data || {}) : [];
                             console.info('[SolectrusSensorsEditor] onChange', {
                                 label,
@@ -276,7 +277,7 @@
                 // as first argument: onChange(updatedDataObject, val?, cb?, saveConfig?)
                 if (dataIsObject) {
                     const nextData = setByPath(props.data, attr, nextSensors);
-                    if (typeof console !== 'undefined' && typeof console.info === 'function') {
+                    if (DEBUG && typeof console !== 'undefined' && typeof console.info === 'function') {
                         console.info('[SolectrusSensorsEditor] nextData', {
                             keys: nextData && typeof nextData === 'object' ? Object.keys(nextData) : null,
                             hasInflux: !!(nextData && nextData.influx),
@@ -427,47 +428,49 @@
             return React.createElement(
                 'div',
                 { style: rootStyle },
-                React.createElement(
-                    'div',
-                    {
-                        style: {
-                            position: 'absolute',
-                            right: 14,
-                            marginTop: -22,
-                            fontSize: 11,
-                            opacity: 0.7,
-                            color: colors.textMuted,
-                            pointerEvents: 'none',
-                        },
-                    },
-                    `Sensors UI ${UI_VERSION}`
-                ),
+                DEBUG
+                    ? React.createElement(
+                          'div',
+                          {
+                              style: {
+                                  position: 'absolute',
+                                  right: 14,
+                                  marginTop: -22,
+                                  fontSize: 11,
+                                  opacity: 0.7,
+                                  color: colors.textMuted,
+                                  pointerEvents: 'none',
+                              },
+                          },
+                          `Sensors UI ${UI_VERSION}`
+                      )
+                    : null,
                 React.createElement(
                     'div',
                     { style: leftStyle },
                     React.createElement(
                         'div',
                         { style: toolbarStyle },
-                        React.createElement('button', { type: 'button', style: btnStyle, onClick: addSensor }, 'Add'),
+                        React.createElement('button', { type: 'button', style: btnStyle, onClick: addSensor }, 'Hinzufügen'),
                         React.createElement(
                             'button',
                             { type: 'button', style: btnStyle, onClick: cloneSelected, disabled: !selectedSensor },
-                            'Clone'
+                            'Duplizieren'
                         ),
                         React.createElement(
                             'button',
                             { type: 'button', style: btnStyle, onClick: deleteSelected, disabled: !selectedSensor },
-                            'Delete'
+                            'Löschen'
                         ),
                         React.createElement(
                             'button',
                             { type: 'button', style: btnStyle, onClick: () => moveSelected(-1), disabled: selectedIndex <= 0 },
-                            'Up'
+                            'Hoch'
                         ),
                         React.createElement(
                             'button',
                             { type: 'button', style: btnStyle, onClick: () => moveSelected(1), disabled: selectedIndex >= sensors.length - 1 },
-                            'Down'
+                            'Runter'
                         )
                     ),
                     React.createElement(
@@ -495,7 +498,7 @@
                             : React.createElement(
                                   'div',
                                   { style: { padding: 12, opacity: 0.9, color: colors.textMuted } },
-                                  'No sensors configured.'
+                                  'Keine Sensoren konfiguriert.'
                               )
                     )
                 ),
@@ -522,10 +525,10 @@
                                           checked: !!selectedSensor.enabled,
                                           onChange: e => updateSelected('enabled', !!e.target.checked),
                                       }),
-                                      React.createElement('span', null, 'Enabled')
+                                      React.createElement('span', null, 'Aktiv')
                                   )
                               ),
-                              React.createElement('label', { style: labelStyle }, 'Sensor Name'),
+                              React.createElement('label', { style: labelStyle }, 'Sensorname'),
                               React.createElement('input', {
                                   style: inputStyle,
                                   type: 'text',
@@ -535,7 +538,7 @@
                               React.createElement(
                                   'label',
                                   { style: labelStyle },
-                                  'ioBroker Source State (paste full state id)'
+                                  'ioBroker Datenpunkt (State-ID)'
                               ),
                               React.createElement(
                                   'div',
@@ -545,7 +548,7 @@
                                       type: 'text',
                                       value: selectedSensor.sourceState || '',
                                       onChange: e => updateSelected('sourceState', e.target.value),
-                                      placeholder: 'e.g. some.adapter.0.channel.state',
+                                      placeholder: 'z.B. some.adapter.0.channel.state',
                                   }),
                                   React.createElement(
                                       'button',
@@ -554,12 +557,12 @@
                                           style: Object.assign({}, btnStyle, { padding: '8px 10px' }),
                                           disabled: !(DialogSelectID && socket && theme),
                                           title: DialogSelectID && socket && theme
-                                              ? 'Select from existing states'
-                                              : 'Select dialog not available (missing socket/theme or adapter-react-v5)'
+                                              ? 'Aus bestehenden Datenpunkten auswählen'
+                                              : 'Auswahl-Dialog nicht verfügbar'
                                           ,
                                           onClick: () => {
                                               if (!(DialogSelectID && socket && theme)) {
-                                                  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                                                  if (DEBUG && typeof console !== 'undefined' && typeof console.warn === 'function') {
                                                       console.warn('[SolectrusSensorsEditor] SelectID not available', {
                                                           version: UI_VERSION,
                                                           hasDialogSelectId: !!DialogSelectID,
@@ -573,7 +576,7 @@
                                               setShowSelectStateId(true);
                                           },
                                       },
-                                      'Select'
+                                      'Auswählen'
                                   )
                               ),
                               React.createElement(
@@ -582,7 +585,7 @@
                                   React.createElement(
                                       'div',
                                       null,
-                                      React.createElement('label', { style: labelStyle }, 'Datatype'),
+                                      React.createElement('label', { style: labelStyle }, 'Datentyp'),
                                       React.createElement(
                                           'select',
                                           {
@@ -590,11 +593,11 @@
                                               value: selectedSensor.type || '',
                                               onChange: e => updateSelected('type', e.target.value),
                                           },
-                                          React.createElement('option', { value: '' }, 'Default'),
-                                          React.createElement('option', { value: 'int' }, 'Integer'),
-                                          React.createElement('option', { value: 'float' }, 'Float'),
+                                          React.createElement('option', { value: '' }, 'Standard'),
+                                          React.createElement('option', { value: 'int' }, 'Ganzzahl'),
+                                          React.createElement('option', { value: 'float' }, 'Fließkomma'),
                                           React.createElement('option', { value: 'bool' }, 'Boolean'),
-                                          React.createElement('option', { value: 'string' }, 'String')
+                                          React.createElement('option', { value: 'string' }, 'Text')
                                       )
                                   ),
                                   React.createElement(
@@ -640,7 +643,7 @@
                         : React.createElement(
                               'div',
                               { style: { opacity: 0.9, color: colors.textMuted } },
-                              'Select a sensor on the left or add a new one.'
+                              'Wähle links einen Sensor aus oder füge einen neuen hinzu.'
                           )
                 )
             );
