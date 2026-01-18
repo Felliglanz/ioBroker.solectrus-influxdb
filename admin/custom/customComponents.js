@@ -96,12 +96,15 @@
             }, [sensors.length, selectedIndex]);
 
             React.useEffect(() => {
-                if (typeof console !== 'undefined' && typeof console.debug === 'function') {
-                    const keys = props && props.data ? Object.keys(props.data) : [];
-                    console.debug('[SolectrusSensorsEditor] mounted', {
+                if (typeof console !== 'undefined' && typeof console.info === 'function') {
+                    const dataKeys = props && props.data && typeof props.data === 'object' && !Array.isArray(props.data)
+                        ? Object.keys(props.data)
+                        : [];
+                    console.info('[SolectrusSensorsEditor] mounted', {
                         attr,
                         propsAttr: props && props.attr,
-                        dataKeys: keys,
+                        dataType: Array.isArray(props && props.data) ? 'array' : typeof (props && props.data),
+                        dataKeys,
                         onChangeType: typeof (props && props.onChange),
                         onChangeLength: props && typeof props.onChange === 'function' ? props.onChange.length : undefined,
                     });
@@ -113,17 +116,20 @@
                     return;
                 }
 
-				// Modern jsonConfig API: onChange(attr, value).
-				// Do NOT rely on function.length (often 0 because of rest params), it can trigger wrong fallbacks.
-				try {
-					props.onChange(attr, nextSensors);
-					return;
-				} catch (e) {
-					// Very old Admin builds used onChange(nextData)
-					const nextData = Object.assign({}, props.data || {});
-					nextData[attr] = nextSensors;
-					props.onChange(nextData);
-				}
+                const dataIsObject = props.data && typeof props.data === 'object' && !Array.isArray(props.data);
+                const dataKeys = dataIsObject ? Object.keys(props.data) : [];
+                // If we have more than just `sensors` in data, assume onChange expects the FULL config object.
+                const looksLikeFullConfig = dataIsObject && dataKeys.some(k => k !== attr);
+
+                if (looksLikeFullConfig) {
+                    const nextData = Object.assign({}, props.data);
+                    nextData[attr] = nextSensors;
+                    props.onChange(nextData);
+                    return;
+                }
+
+                // Otherwise treat this custom control as bound to a single value.
+                props.onChange(nextSensors);
             };
 
             const selectedSensor = sensors[selectedIndex] || null;
