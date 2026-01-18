@@ -80,11 +80,36 @@
         return ensureTitle(sensor);
     }
 
-    function createSolectrusSensorsEditor(React) {
+    function createSolectrusSensorsEditor(React, AdapterReact) {
         return function SolectrusSensorsEditor(props) {
             const attr = (props && typeof props.attr === 'string' && props.attr) ? props.attr : 'sensors';
             const dataIsArray = Array.isArray(props && props.data);
             const dataIsObject = !!(props && props.data && typeof props.data === 'object' && !dataIsArray);
+
+            const isDark = (props && props.themeType === 'dark') || (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            const colors = isDark
+                ? {
+                      panelBg: '#1f1f1f',
+                      panelBg2: '#242424',
+                      text: '#ffffff',
+                      textMuted: 'rgba(255,255,255,0.75)',
+                      border: 'rgba(255,255,255,0.16)',
+                      rowBorder: 'rgba(255,255,255,0.10)',
+                      hover: 'rgba(255,255,255,0.06)',
+                      active: 'rgba(255,255,255,0.10)',
+                  }
+                : {
+                      panelBg: '#ffffff',
+                      panelBg2: '#ffffff',
+                      text: '#111111',
+                      textMuted: 'rgba(0,0,0,0.70)',
+                      border: 'rgba(0,0,0,0.15)',
+                      rowBorder: 'rgba(0,0,0,0.10)',
+                      hover: 'rgba(0,0,0,0.05)',
+                      active: 'rgba(0,0,0,0.08)',
+                  };
+
+            const DialogSelectID = AdapterReact && (AdapterReact.DialogSelectID || AdapterReact.SelectID);
 
             // Admin versions differ:
             // - Some pass `props.data` as the full native object (then `attr` selects the field).
@@ -94,6 +119,7 @@
                 : normalizeSensors(props.data && props.data[attr]);
 
             const [selectedIndex, setSelectedIndex] = React.useState(0);
+            const [showSelectStateId, setShowSelectStateId] = React.useState(false);
 
             React.useEffect(() => {
                 if (selectedIndex > sensors.length - 1) {
@@ -281,30 +307,33 @@
                 gap: 12,
                 width: '100%',
                 minHeight: 360,
+                color: colors.text,
             };
 
             const leftStyle = {
                 width: 340,
                 maxWidth: '40%',
-                border: '1px solid rgba(0,0,0,0.15)',
+                border: `1px solid ${colors.border}`,
                 borderRadius: 6,
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
+                background: colors.panelBg,
             };
 
             const rightStyle = {
                 flex: 1,
-                border: '1px solid rgba(0,0,0,0.15)',
+                border: `1px solid ${colors.border}`,
                 borderRadius: 6,
                 padding: 12,
+                background: colors.panelBg2,
             };
 
             const toolbarStyle = {
                 display: 'flex',
                 gap: 8,
                 padding: 10,
-                borderBottom: '1px solid rgba(0,0,0,0.12)',
+                borderBottom: `1px solid ${colors.rowBorder}`,
                 flexWrap: 'wrap',
             };
 
@@ -316,9 +345,10 @@
             const btnStyle = {
                 padding: '6px 10px',
                 borderRadius: 6,
-                border: '1px solid rgba(0,0,0,0.20)',
+                border: `1px solid ${colors.border}`,
                 background: 'transparent',
                 cursor: 'pointer',
+                color: colors.text,
             };
 
             const listBtnStyle = isActive => ({
@@ -326,24 +356,27 @@
                 textAlign: 'left',
                 padding: '10px 10px',
                 border: 'none',
-                borderBottom: '1px solid rgba(0,0,0,0.10)',
-                background: isActive ? 'rgba(0, 0, 0, 0.06)' : 'transparent',
+                borderBottom: `1px solid ${colors.rowBorder}`,
+                background: isActive ? colors.active : 'transparent',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 fontSize: 14,
                 display: 'flex',
                 gap: 8,
                 alignItems: 'center',
+                color: colors.text,
             });
 
-            const labelStyle = { display: 'block', fontSize: 12, opacity: 0.85, marginTop: 10 };
+            const labelStyle = { display: 'block', fontSize: 12, color: colors.textMuted, marginTop: 10 };
             const inputStyle = {
                 width: '100%',
                 padding: '8px 10px',
                 borderRadius: 6,
-                border: '1px solid rgba(0,0,0,0.20)',
+                border: `1px solid ${colors.border}`,
                 fontFamily: 'inherit',
                 fontSize: 14,
+                color: colors.text,
+                background: isDark ? 'rgba(255,255,255,0.06)' : '#ffffff',
             };
 
             const rowStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 };
@@ -396,14 +429,14 @@
                                       React.createElement('span', { style: { fontWeight: 600 } }, s.SensorName || '(unnamed)'),
                                       React.createElement(
                                           'span',
-                                          { style: { opacity: 0.75, marginLeft: 'auto' } },
+                                          { style: { opacity: 0.75, marginLeft: 'auto', color: colors.textMuted } },
                                           s.field || ''
                                       )
                                   )
                               )
                             : React.createElement(
                                   'div',
-                                  { style: { padding: 12, opacity: 0.8 } },
+                                  { style: { padding: 12, opacity: 0.9, color: colors.textMuted } },
                                   'No sensors configured.'
                               )
                     )
@@ -446,13 +479,31 @@
                                   { style: labelStyle },
                                   'ioBroker Source State (paste full state id)'
                               ),
-                              React.createElement('input', {
-                                  style: inputStyle,
-                                  type: 'text',
-                                  value: selectedSensor.sourceState || '',
-                                  onChange: e => updateSelected('sourceState', e.target.value),
-                                  placeholder: 'e.g. some.adapter.0.channel.state',
-                              }),
+                              React.createElement(
+                                  'div',
+                                  { style: { display: 'flex', gap: 8, alignItems: 'center' } },
+                                  React.createElement('input', {
+                                      style: Object.assign({}, inputStyle, { flex: 1 }),
+                                      type: 'text',
+                                      value: selectedSensor.sourceState || '',
+                                      onChange: e => updateSelected('sourceState', e.target.value),
+                                      placeholder: 'e.g. some.adapter.0.channel.state',
+                                  }),
+                                  React.createElement(
+                                      'button',
+                                      {
+                                          type: 'button',
+                                          style: Object.assign({}, btnStyle, { padding: '8px 10px' }),
+                                          disabled: !(DialogSelectID && props && props.socket && props.theme),
+                                          title: DialogSelectID && props && props.socket && props.theme
+                                              ? 'Select from existing states'
+                                              : 'Select dialog not available (missing socket/theme)'
+                                          ,
+                                          onClick: () => setShowSelectStateId(true),
+                                      },
+                                      'Select'
+                                  )
+                              ),
                               React.createElement(
                                   'div',
                                   { style: rowStyle },
@@ -492,11 +543,31 @@
                                   type: 'text',
                                   value: selectedSensor.field || '',
                                   onChange: e => updateSelected('field', e.target.value),
-                              })
+                              }),
+                              showSelectStateId && DialogSelectID && props && props.socket && props.theme
+                                  ? React.createElement(DialogSelectID, {
+                                        key: 'selectStateId',
+                                        imagePrefix: '../..',
+                                        dialogName: (props && (props.adapterName || props.adapter)) || 'solectrus-influxdb',
+                                        themeType: props && props.themeType,
+                                        theme: props && props.theme,
+                                        socket: props && props.socket,
+                                        types: 'state',
+                                        selected: selectedSensor.sourceState || '',
+                                        onClose: () => setShowSelectStateId(false),
+                                        onOk: selected => {
+                                            const selectedStr = Array.isArray(selected) ? selected[0] : selected;
+                                            setShowSelectStateId(false);
+                                            if (selectedStr) {
+                                                updateSelected('sourceState', selectedStr);
+                                            }
+                                        },
+                                    })
+                                  : null
                           )
                         : React.createElement(
                               'div',
-                              { style: { opacity: 0.8 } },
+                              { style: { opacity: 0.9, color: colors.textMuted } },
                               'Select a sensor on the left or add a new one.'
                           )
                 )
@@ -507,12 +578,13 @@
     const moduleMap = {
         './Components': async function () {
             const React = globalThis.React || (await loadShared('react'));
+            const AdapterReact = await loadShared('@iobroker/adapter-react-v5');
             if (!React) {
                 throw new Error(
                     'SolectrusSensors custom UI: React not available (neither global nor via shared scope).'
                 );
             }
-            const SolectrusSensorsEditor = createSolectrusSensorsEditor(React);
+            const SolectrusSensorsEditor = createSolectrusSensorsEditor(React, AdapterReact);
             return {
                 default: {
                     SolectrusSensorsEditor,
